@@ -1,0 +1,13 @@
+{
+	"devDependencies": {
+		"koa-proxies": "^0.12.4",
+		"@open-wc/building-rollup": "3.0.2",
+		"es-dev-server": "^2.1.0"
+	},
+	"dependencies": {
+		"@lit/context": "^1.1.1",
+		"@lit/task": "^1.0.0",
+		"@vaadin/router": "^1.7.5",
+		"lit": "^3.1.3"
+	}
+}
