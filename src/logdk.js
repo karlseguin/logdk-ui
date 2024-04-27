@@ -1,6 +1,8 @@
-import { LitElement, html, css } from 'lit-element';
 import { ContextProvider } from '@lit/context';
+import {html, literal} from 'lit/static-html.js';
+import { LitElement, css } from 'lit-element';
 
+import * as url from 'url';
 import * as styles from 'styles';
 import { context } from 'context.js';
 
@@ -10,19 +12,71 @@ import 'pages/event-browser';
 export class Logdk extends LitElement {
 	_context = new ContextProvider(this, context);
 
+	static properties = {
+		_component: {state: true}
+	};
+
 	constructor() {
 		super();
 		const api = new Api();
 		this._context.setValue({api: api});
+		this.route(top.location.pathname);
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
+		window.addEventListener('click', this.click.bind(this));
+		window.addEventListener('popstate', this.popstate.bind(this));
+	}
+
+	disconnectedCallback() {
+		super.disconnectedCallback();
+		window.removeEventlistener('click', this.click.bind(this));
+		window.removeEventlistener('popstate', this.popstate.bind(this));
+	}
+
+	click(e) {
+		const event_path = event.composedPath();
+		const target = event_path[0];
+		if (target.tagName !== 'A' || target.dataset.wc === undefined) return;
+
+		const pathname = target.pathname;
+		if (this.route(pathname)) {
+			history.pushState(null, '', pathname);
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	}
+
+	popstate() {
+		this.route(top.location.pathname);
+	}
+
+	route(path) {
+		let component = null;
+		switch (path) {
+		case '':
+		case '/':
+			component = literal`event-browser`;
+		}
+
+		if (component == null) return false;
+
+		if (this._component && this._component.r == component.r) {
+			const c = this.renderRoot?.querySelector(component['_$litStatic$']);
+			if (c.popstate) c.popstate();
+		} else {
+			this._component = component;
+		}
+		return true;
 	}
 
 	render() {
 		return html`
 			<header><nav><ul>
-				<li><a href=/>home</a>
-				<!--<li><a href=/docs/api>api</a>-->
+				<li><a href="/" data-wc>home</a>
 			</ul></nav></header>
-			<slot><event-browser></event-browser></slot>
+			<${this._component}></${this._component}>
 		`;
 	}
 

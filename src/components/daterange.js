@@ -182,12 +182,20 @@ export class DateRange extends Element {
 		if (ts.rel) {
 			return shortcuts[ts.rel];
 		}
-		if (ts.gte && ts.lte) {
-			return `${ts.gte.toLocaleString(undefined, displayFormat)} - ${ts.lte.toLocaleString(undefined, displayFormat)}`;
-		}
-		return '';
-	}
 
+		let str = '';
+		if (ts.gte) {
+			str += ts.gte.toLocaleString(undefined, displayFormat);
+		}
+		if (ts.lte) {
+			if (!ts.gte) str += '∞'
+			str += ' - ' + ts.lte.toLocaleString(undefined, displayFormat);
+		} else if (ts.gte) {
+			str += ' - ∞'
+		}
+
+		return str;
+	}
 
 	renderPicker() {
 		switch (this._mode) {

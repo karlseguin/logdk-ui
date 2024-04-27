@@ -9,7 +9,7 @@ function encodeQuerystring(data) {
 }
 
 function pushQuery(data) {
-	history.pushState({}, "", encodeQuerystring(data));
+	history.pushState({}, '', encodeQuerystring(data));
 }
 
 function parseQuery() {

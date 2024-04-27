@@ -18,6 +18,16 @@ export class EventBrowser extends Element {
 		this.restoreFromQuery();
 	}
 
+	connectedCallback() {
+		super.connectedCallback();
+		window.addEventListener('keydown', this.keydown.bind(this));
+	}
+
+	disconnectedCallback() {
+		super.disconnectedCallback();
+		window.removeEventlistener('keydown', this.keydown.bind(this));
+	}
+
 	restoreFromQuery() {
 		const args = url.parseQuery();
 		this._filters = args.filters ?? {};
@@ -58,23 +68,12 @@ export class EventBrowser extends Element {
 	get filterElement() { return this.selector('event-filter'); }
 	get detailElement() { return this.selector('event-detail'); }
 
-	connectedCallback() {
-		super.connectedCallback();
-		window.addEventListener('keydown', this.keydown.bind(this));
-		window.addEventListener('popstate', this.popstate.bind(this));
-	}
-
-	disconnectedCallback() {
-		super.disconnectedCallback();
-		window.removeEventlistener('keydown', this.keydown.bind(this));
-		window.removeEventlistener('popstate', this.popstate.bind(this));
-	}
-
 	popstate() {
 		this.filterChange();
 		this.restoreFromQuery();
 		this.reloadData(true);
 		this.filterElement.dataset = this._dataset ?? '';
+		this.update();
 	}
 
 	keydown(e) {
