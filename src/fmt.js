@@ -71,7 +71,7 @@ function relativeTime(op) {
 	case 'ytd':
 		lte = n;
 		gte = new Date(Date.UTC(n.getUTCFullYear(), 0, 1));
-		breal;
+		break;
 	default:
 		return null;
 	}

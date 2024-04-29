@@ -79,7 +79,7 @@ export class Pager extends Element {
 		css`
 .pager {
 	user-select: none;
-	margin-top: 20px;
+	margin-top: 30px;
 	text-align: center;
 }
 .hidden {
@@ -87,10 +87,10 @@ export class Pager extends Element {
 }
 a {
 	cursor: pointer;
-	width: 40px;
+	width: 30px;
 	text-align: center;
-	padding: 5px 0;
-	margin: 0 2px 10px;
+	margin: 0 4px;
+	padding: 2px 0;
 	display: inline-block;
 	border-radius: 4px;
 	border: 1px solid #ddd;
@@ -103,7 +103,6 @@ a:hover {
 a.active {
 	color: ${this.css.control.color};
 	background: ${this.css.control.background};
-	border-color: transparent;
 }
 span {
 	width: 30px;

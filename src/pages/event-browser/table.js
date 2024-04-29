@@ -27,7 +27,7 @@ export class Table extends Element {
 
 	render() {
 		if (this.err) {
-			return html`<logdk-error message="Error getting rows" .err=${this.err}></logdk-error>`
+			return html`<logdk-error message="Error getting rows" .err=${this.err} .absolute=${false}></logdk-error>`
 		}
 
 		const data = this.data;
@@ -155,10 +155,10 @@ th {
 	position: sticky;
 	text-align: left;
 	font-weight: normal;
-	border-top: 0;
 	padding-right: 20px;
 	background: ${this.css.header.background};
 	border: 1px solid ${this.css.header.border};
+	border-top: 0;
 }
 
 th:after{
@@ -183,6 +183,7 @@ tbody tr:nth-child(odd) {
 	background: #f6f6f6;
 }
 tbody tr:hover td {
+	cursor: pointer;
 	color: ${this.css.hover.color};
 	background: ${this.css.hover.background};
 }

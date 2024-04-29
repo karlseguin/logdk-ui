@@ -1,21 +1,24 @@
 import { ContextError } from 'error';
+import { styleMap } from 'lit/directives/style-map.js';
 import { Element, html, css } from 'components/base';
 
 class Error extends Element {
 	static properties = {
 		err: {},
 		message: {},
+		absolute: {type: Boolean},
 		_showDetails: {state: true},
 	};
 
 	constructor() {
 		super();
+		this.absolute = true;
 		this._showDetails = false;
 	}
 
 	details() {
 		const err = this.err;
-		const data = err instanceof ContextError ? err.ctx : {message: err.message, type: typeof(err)};
+		const data = err instanceof ContextError ? err.ctx : {name: err.name, message: err.message, type: typeof(err), file: err.fileName, line: err.lineNumber, stack: err.stack};
 		const keys = Object.keys(data).sort();
 		return html`${keys.map((k) => {
 			const value = data[k];
@@ -28,8 +31,9 @@ class Error extends Element {
 	}
 
 	render() {
+		const styles = this.absolute ? {position: 'absolute', top: '50px'} : {};
 		return html`
-			<div>
+			<div style=${styleMap(styles)}>
 				<p>${this.message}. Please try again.</p>
 				<p><a href=# @click=${this.toggleDetails}>${this._showDetails ? html`hide details` : html`show details`}</a></p>
 				<div ?hidden=${!this._showDetails} class=fields>${this.details()}</div>
@@ -44,8 +48,6 @@ class Error extends Element {
 	background: #fee;
 	width: 600px;
 	margin: 0 auto;
-	position: absolute;
-	top: 50px;
 	padding: 5px 20px;
 	border-radius: 4px;
 	border: 1px solid #fcc;

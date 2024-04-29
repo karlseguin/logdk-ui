@@ -3,7 +3,6 @@ import { Element, html, css } from 'components/base';
 import { ContextError } from 'error';
 import * as url from 'url';
 import * as fmt from 'fmt';
-import { FilterBuilder } from 'sql'
 
 import './table.js';
 import './filter.js';
@@ -30,26 +29,9 @@ export class EventBrowser extends Element {
 
 	restoreFromQuery() {
 		const args = url.parseQuery();
-		this._filters = args.filters ?? {};
 		this._dataset = args.dataset ?? null;
 		this._selected = args.selected ?? null;
-
-		const ts = {}
-		if (args['ts[rel]']) {
-			const rel = args['ts[rel]'];
-			ts.rel = rel;
-			const [gte, lte] = fmt.relativeTime(rel)
-			ts.gte = gte;
-			ts.lte = lte;
-		} else {
-			if (args['ts[gte]']) {
-				ts.gte = new Date(parseInt(args['ts[gte]']));
-			}
-			if (args['ts[lte]']) {
-				ts.lte = new Date(parseInt(args['ts[lte]']));
-			}
-		}
-		this._ts = ts;
+		this._filters = args.filters ? JSON.parse(args.filters) : {};
 
 		// can't select this until we've loaded the data
 		this._selectOnData = this._selected;
@@ -69,7 +51,7 @@ export class EventBrowser extends Element {
 	get detailElement() { return this.selector('event-detail'); }
 
 	popstate() {
-		this.filterChange();
+		this.resetForFirstPage();
 		this.restoreFromQuery();
 		this.reloadData(true);
 		this.filterElement.dataset = this._dataset ?? '';
@@ -82,23 +64,21 @@ export class EventBrowser extends Element {
 	}
 
 	datasetChange(e) {
-		this.filterChange();
+		this.resetForFirstPage();
 		this._dataset = e.detail;
 		this.reloadData(true);
 		this.pushURL();
 	}
 
 	dateChange(e) {
-		this.filterChange();
-		this._ts = e.detail;
+		this.resetForFirstPage();
+
+		const ts = e.detail;
+		const args = ts.rel ? ts.rel : `${ts.gte.getTime()}-${ts.lte.getTime()}`
+
+		this._filters['.ts'] = args;
 		this.reloadData(true);
 		this.pushURL();
-	}
-
-	filterChange() {
-		this._page = 1;
-		this._selected = null;
-		this._selectOnData = null;
 	}
 
 	rowClick(e) {
@@ -136,6 +116,10 @@ export class EventBrowser extends Element {
 		this.pushURL();
 	}
 
+	filterClick(e) {
+
+	}
+
 	detailClose() {
 		this._selected = null;
 		this._selectOnData = null;
@@ -143,6 +127,12 @@ export class EventBrowser extends Element {
 			this.detailElement.row = null;
 			this.pushURL();
 		}
+	}
+
+	resetForFirstPage() {
+		this._page = 1;
+		this._selected = null;
+		this._selectOnData = null;
 	}
 
 	async reloadData(total) {
@@ -156,26 +146,12 @@ export class EventBrowser extends Element {
 		this.tableElement.data = 'loading';
 		this.pagerElement.paging = null;
 		try {
-			const ts = this._ts;
 			const page = this._page;
 			const limit = this._limit;
 			const order = this._order;
 
-			let args = {total: total, page: page, limit: limit};
+			let args = {total: total, page: page, limit: limit, filters: JSON.stringify(this._filters)};
 			if (order) args.order = order;
-
-			let filter = new FilterBuilder();
-			if (ts) {
-				filter.and(() => {
-					const gte = ts.gte;
-					if (gte) filter.infix('$inserted', '>=', gte)
-					const lte = ts.lte;
-					if (lte) filter.infix('$inserted', '<=', lte)
-				});
-			}
-			if (filter.str.length > 0) {
-				args.filter = filter.str;
-			}
 
 			const res = await this.api.getEvents(dataset, args, {});
 			const data = res.body;
@@ -212,16 +188,7 @@ export class EventBrowser extends Element {
 		if (this._order) opts.order = this._order;
 		if (this._dataset) opts.dataset = this._dataset;
 		if (this._selected) opts.selected = this._selected;
-
-		const ts = this._ts;
-		if (ts) {
-			if (ts.rel) opts['ts[rel]'] = ts.rel
-			else {
-				if (ts.gte) opts['ts[gte]'] = ts.gte.getTime();
-				if (ts.lte) opts['ts[lte]'] = ts.lte.getTime();
-			}
-		}
-
+		if (this._filters) opts.filters = JSON.stringify(this._filters);
 		url.pushQuery(opts);
 	}
 
@@ -243,13 +210,13 @@ export class EventBrowser extends Element {
 				}
 				return html`
 				<div class=browser>
-					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters} .ts=${this._ts}></event-filter>
+					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
 					<div class=data>
 						<div class=table>
 							<event-table @headerClick=${this.headerClick} @rowClick=${this.rowClick}></event-table>
 							<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
 						</div>
-						<event-detail @close=${this.detailClose}></event-detail>
+						<event-detail @close=${this.detailClose} @filterClick=${this.filterClick}></event-detail>
 					</div>
 				</div>
 				`;

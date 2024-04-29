@@ -6,7 +6,7 @@ export class Filter extends Element {
 	static properties = {
 		dataset: {type: String},
 		datasets: {type: Array},
-		ts: {type: Object}
+		filters: {type: Object}
 	};
 
 	constructor() {
@@ -31,12 +31,26 @@ export class Filter extends Element {
 			}
 			this._dataset_lookup = lookup;
 		}
+
+		const filters = this.filters;
+
+		let ts = null;
+		const rawTs = filters['.ts'];
+		if (rawTs) {
+			if (rawTs.startsWith('min-') || rawTs.startsWith('rel-')) {
+				ts = {rel : rawTs};
+			} else {
+				const parts = rawTs.split('-');
+				ts = {gte: new Date(parseInt(parts[0])), lte: new Date(parseInt(parts[1]))};
+			}
+		}
+
 		return html`
 			<div class=field>
 				<logdk-select @change=${this.datasetChange} .options=${this._dataset_lookup} .selected=${this.dataset}></logdk-select>
 			</div>
 			<div class=field>
-				<logdk-daterange @change=${this.dateChange} .ts=${this.ts ?? {}}></logdk-daterange>
+				<logdk-daterange @change=${this.dateChange} .ts=${ts}></logdk-daterange>
 			</div>
 		`;
 	}

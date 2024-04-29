@@ -3,7 +3,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { relativeTime } from 'fmt';
 
 const months = Array.from({length: 12}, (_, i) => new Date(2000, i, 1).toLocaleDateString(undefined, {'month': 'long'}));
-const displayFormat = {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'};
+const displayFormat = {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'};
 const shortcuts = {
 	'min-5': 'last 5 minutes',
 	'min-15': 'last 15 minutes',
@@ -58,6 +58,7 @@ export class DateRange extends Element {
 	close(event) {
 		this.showPicker = false;
 		this._mode = MODE_DATE_PICKER;
+		this.applyTime();
 		if (event) {
 			this.dispatchEvent(new CustomEvent('change', {detail: this.ts}));
 		}
@@ -126,10 +127,10 @@ export class DateRange extends Element {
 				this.ts.lte = null;
 				this.ts.rel = null;
 				this.setGTE(new Date(parseInt(op)));
-				this.applyTime(this.ts.gte, this.selector('input[name="start_time"]', '00:00'));
+				this.applyTime();
 			} else {
 				this.ts.lte = new Date(parseInt(op));
-				this.applyTime(this.ts.lte, this.selector('input[name="end_time"]', '23:59'));
+				this.applyTime();
 				if (this.ts.lte < this.ts.gte) {
 					const x = this.ts.lte;
 					this.ts.lte = this.get;
@@ -165,7 +166,6 @@ export class DateRange extends Element {
 	render() {
 		this._current = this._current ?? this.ts?.gte;
 		if (!this._current) {
-			this.ts = {};
 			this._current = new Date();
 			this._current.setUTCHours(0);
 			this._current.setUTCMinutes(0);
@@ -332,7 +332,13 @@ export class DateRange extends Element {
 		return `${hours}:${minutes}`;
 	}
 
-	applyTime(date, input, dflt) {
+	applyTime() {
+		this.applyTimeTo(this.ts.gte, this.selector('input[name="start_time"]', '00:00'));
+		this.applyTimeTo(this.ts.lte, this.selector('input[name="end_time"]', '23:59'));
+	}
+
+	applyTimeTo(date, input, dflt) {
+		if (!date || !input) return;
 		const time = input.value === '' ? dflt : input.value;
 		const parts = time.split(':');
 		date.setUTCHours(parseInt(parts[0]));
