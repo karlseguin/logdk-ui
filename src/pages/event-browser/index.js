@@ -3,6 +3,10 @@ import { Element, html, css } from 'components/base';
 import { ContextError } from 'error';
 import * as url from 'url';
 import * as fmt from 'fmt';
+import { opToCode } from 'filters'
+
+const TS_OPCODE = opToCode('ts');
+const BETWEEN_OPCODE = opToCode('between');
 
 import './table.js';
 import './filter.js';
@@ -28,10 +32,18 @@ export class EventBrowser extends Element {
 	}
 
 	restoreFromQuery() {
-		const args = url.parseQuery();
+		const qs = top.location.hash;
+		const args = url.parseQuery(qs);
 		this._dataset = args.dataset ?? null;
 		this._selected = args.selected ?? null;
-		this._filters = args.filters ? JSON.parse(args.filters) : {};
+		const filters = args.filters ? JSON.parse(args.filters) : {};
+
+		const ts = filters['.ts']
+		if (ts) {
+			filters['.ts'] = ts.length == 2 ? {rel: ts[1]} : {gte: new Date(ts[1]), lte: new Date(ts[2])};
+		}
+
+		this._filters = filters
 
 		// can't select this until we've loaded the data
 		this._selectOnData = this._selected;
@@ -72,11 +84,8 @@ export class EventBrowser extends Element {
 
 	dateChange(e) {
 		this.resetForFirstPage();
-
 		const ts = e.detail;
-		const args = ts.rel ? ts.rel : `${ts.gte.getTime()}-${ts.lte.getTime()}`
-
-		this._filters['.ts'] = args;
+		this._filters['.ts'] = ts.rel ? [TS_OPCODE, ts.rel] : [BETWEEN_OPCODE, ts.gte.getTime(), ts.lte.getTime()];
 		this.reloadData(true);
 		this.pushURL();
 	}
@@ -117,7 +126,11 @@ export class EventBrowser extends Element {
 	}
 
 	filterClick(e) {
-
+		this.resetForFirstPage();
+		const f = e.detail;
+		this._filters[f.col] = [f.op, f.value];
+		this.reloadData(false);
+		this.pushURL();
 	}
 
 	detailClose() {
@@ -188,7 +201,11 @@ export class EventBrowser extends Element {
 		if (this._order) opts.order = this._order;
 		if (this._dataset) opts.dataset = this._dataset;
 		if (this._selected) opts.selected = this._selected;
-		if (this._filters) opts.filters = JSON.stringify(this._filters);
+
+		const filters = JSON.stringify(this._filters);
+		if (filters.length > 2) {
+			opts.filters = filters;
+		}
 		url.pushQuery(opts);
 	}
 

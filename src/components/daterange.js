@@ -2,9 +2,9 @@ import { Element, html, css } from 'components/base';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { relativeTime } from 'fmt';
 
-const months = Array.from({length: 12}, (_, i) => new Date(2000, i, 1).toLocaleDateString(undefined, {'month': 'long'}));
-const displayFormat = {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'};
-const shortcuts = {
+const MONTHS = Array.from({length: 12}, (_, i) => new Date(2000, i, 1).toLocaleDateString(undefined, {'month': 'long'}));
+const DISPLAY_FORMAT = {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'};
+const SHORTCUTS = {
 	'min-5': 'last 5 minutes',
 	'min-15': 'last 15 minutes',
 	'min-60': 'last hour',
@@ -59,9 +59,8 @@ export class DateRange extends Element {
 		this.showPicker = false;
 		this._mode = MODE_DATE_PICKER;
 		this.applyTime();
-		if (event) {
-			this.dispatchEvent(new CustomEvent('change', {detail: this.ts}));
-		}
+		if (!event) return;
+		this.dispatchEvent(new CustomEvent('change', {detail: this.ts}));
 	}
 
 	click(e) {
@@ -166,6 +165,7 @@ export class DateRange extends Element {
 	render() {
 		this._current = this._current ?? this.ts?.gte;
 		if (!this._current) {
+			if (!this.ts) this.ts = {};
 			this._current = new Date();
 			this._current.setUTCHours(0);
 			this._current.setUTCMinutes(0);
@@ -179,17 +179,18 @@ export class DateRange extends Element {
 
 	formatted() {
 		const ts = this.ts;
+
 		if (ts.rel) {
-			return shortcuts[ts.rel];
+			return SHORTCUTS[ts.rel];
 		}
 
 		let str = '';
 		if (ts.gte) {
-			str += ts.gte.toLocaleString(undefined, displayFormat);
+			str += ts.gte.toLocaleString(undefined, DISPLAY_FORMAT);
 		}
 		if (ts.lte) {
 			if (!ts.gte) str += '∞'
-			str += ' - ' + ts.lte.toLocaleString(undefined, displayFormat);
+			str += ' - ' + ts.lte.toLocaleString(undefined, DISPLAY_FORMAT);
 		} else if (ts.gte) {
 			str += ' - ∞'
 		}
@@ -214,14 +215,14 @@ export class DateRange extends Element {
 			<div class=datePicker>
 				<div class=header>
 					<span data-op=prev>«</span>
-					<div><span data-op=m2>${months[current.getUTCMonth()]} ${current.getUTCFullYear()}</span></div>
+					<div><span data-op=m2>${MONTHS[current.getUTCMonth()]} ${current.getUTCFullYear()}</span></div>
 				</div>
 				${unsafeHTML(this.buildMonth(current))}
 				<div class=time><label>Start time</label> <input type=time name=start_time value="${this.formatTime(this.ts.gte, '00:00')}"></div>
 			</div>
 			<div class=datePicker>
 				<div class=header>
-					<div><span data-op=m2>${months[next.getUTCMonth()]} ${next.getUTCFullYear()}</span></div>
+					<div><span data-op=m2>${MONTHS[next.getUTCMonth()]} ${next.getUTCFullYear()}</span></div>
 					<span data-op=next>»</span>
 				</div>
 				${unsafeHTML(this.buildMonth(next))}
@@ -229,7 +230,7 @@ export class DateRange extends Element {
 			</div>
 			<div>
 				<ul class=shortcuts @click=${this.shortcut}>
-					${Object.keys(shortcuts).map((v) => html`<li data-op=${v}>${shortcuts[v]}`)}
+					${Object.keys(SHORTCUTS).map((v) => html`<li data-op=${v}>${SHORTCUTS[v]}`)}
 				</ul>
 				<input data-op=apply type=button value=apply> <input data-op=clear type=button value=clear>
 			</div>

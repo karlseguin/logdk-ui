@@ -33,24 +33,12 @@ export class Filter extends Element {
 		}
 
 		const filters = this.filters;
-
-		let ts = null;
-		const rawTs = filters['.ts'];
-		if (rawTs) {
-			if (rawTs.startsWith('min-') || rawTs.startsWith('rel-')) {
-				ts = {rel : rawTs};
-			} else {
-				const parts = rawTs.split('-');
-				ts = {gte: new Date(parseInt(parts[0])), lte: new Date(parseInt(parts[1]))};
-			}
-		}
-
 		return html`
 			<div class=field>
 				<logdk-select @change=${this.datasetChange} .options=${this._dataset_lookup} .selected=${this.dataset}></logdk-select>
 			</div>
 			<div class=field>
-				<logdk-daterange @change=${this.dateChange} .ts=${ts}></logdk-daterange>
+				<logdk-daterange @change=${this.dateChange} .ts=${filters['.ts']}></logdk-daterange>
 			</div>
 		`;
 	}

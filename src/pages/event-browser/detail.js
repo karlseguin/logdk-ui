@@ -1,6 +1,6 @@
 import { Element, html, css } from 'components/base';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import * as fmt from 'fmt';
+import * as filters from 'filters';
 
 export class Detail extends Element {
 	static properties = {
@@ -38,11 +38,11 @@ export class Detail extends Element {
 		if (target.tagName !== 'LI') return;
 
 		const index = target.closest('label').dataset.index;
-		this.dispatchEvent(new CustomEvent('filterClick'), {detail: {
+		this.dispatchEvent(new CustomEvent('filterClick', {detail: {
 			col: this.row.cols[index],
 			op: target.textContent,
 			value: this.row.data[index],
-		}});
+		}}));
 	}
 
 	render() {
@@ -66,11 +66,10 @@ export class Detail extends Element {
 			return html`<div class=field>
 				<label data-index=${i}>
 					${cols[i]}
-					${showFilters ? html`<ul class=filters @click=${this.filterClick}>${unsafeHTML(filters(type, value))}` : ''}
+					${showFilters ? html`<ul class=filters @click=${this.filterClick}>${filters.forValue(type, value)}` : ''}
 					<span>${type}</span>
 				</label>
 				${fmt.value(fmt.typed(value, type))}
-
 			</div>`;
 		});
 
@@ -178,43 +177,5 @@ span {
 		`
 	];
 }
-
-const EQUALITY_FITERS = '<li>==<li>!=';
-const COMPARISON_FILTERS = '<li>==<li>!=<li>&lt;<li>&lt;=<li>&gt;<li>&gt;=';
-
-function filters(type, value) {
-	if (value == null) {
-		return EQUALITY_FITERS;
-	}
-
-	switch (type) {
-		case 'varchar': return EQUALITY_FITERS;
-		case 'blob': return EQUALITY_FITERS;
-		case 'boolean': return COMPARISON_FILTERS;
-		case 'tinyint': return COMPARISON_FILTERS;
-		case 'integer': return COMPARISON_FILTERS;
-		case 'smallint': return COMPARISON_FILTERS;
-		case 'bigint': return COMPARISON_FILTERS;
-		case 'hugeint': return COMPARISON_FILTERS;
-		case 'utinyint': return COMPARISON_FILTERS;
-		case 'usmallint': return COMPARISON_FILTERS;
-		case 'uinteger': return COMPARISON_FILTERS;
-		case 'ubigint': return COMPARISON_FILTERS;
-		case 'uhugeint': return COMPARISON_FILTERS;
-		case 'real': return COMPARISON_FILTERS;
-		case 'double': return COMPARISON_FILTERS;
-		case 'date': return COMPARISON_FILTERS;
-		case 'time': return COMPARISON_FILTERS;
-		case 'timestamp': return COMPARISON_FILTERS;
-		case 'enum': return EQUALITY_FITERS;
-		case 'uuid': return EQUALITY_FITERS;
-		case 'interval': return EQUALITY_FITERS;
-	}
-	if (type.startsWith('decimal(')) return COMPARISON_FILTERS;
-
-	// TODO, arrays?
-
-	return '';
-};
 
 customElements.define('event-detail', Detail);

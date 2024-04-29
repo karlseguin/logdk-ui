@@ -13,7 +13,7 @@ export class Api {
 			args = { ... args }
 			delete(args.dataset);
 		}
-		return request(`/api/1/datasets/${dataset}/events${encodeQuerystring(args)}`, opts);
+		return request(`/api/1/datasets/${dataset}/events?${encodeQuerystring(args)}`, opts);
 	}
 };
 
