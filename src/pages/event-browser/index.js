@@ -37,7 +37,7 @@ export class EventBrowser extends Element {
 		// can't select this until we've loaded the data
 		this._selectOnData = this._selected;
 
-		this._order = args.order ?? '-$id';
+		this._order = args.order ?? '-ldk_id';
 
 		const page = parseInt(args.page)
 		this._page = isNaN(page) ? 1 : page;
@@ -68,7 +68,7 @@ export class EventBrowser extends Element {
 		this.resetForFirstPage();
 		this._filters = [];
 		this._page = 1;
-		this._order = '-$id';
+		this._order = '-ldk_id';
 		this._dataset = e.detail;
 		this.filterChanged();
 		this.reloadData(true);

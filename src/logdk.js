@@ -4,7 +4,7 @@ import { LitElement, css } from 'lit-element';
 
 import * as url from 'url';
 import * as styles from 'styles';
-import { context } from 'context.js';
+import { context } from 'context';
 
 import { Api } from  'api';
 import 'pages/event-browser';
