@@ -26,8 +26,10 @@ class Error extends Element {
 		})}`;
 	}
 
-	toggleDetails() {
+	toggleDetails(e) {
 		this._showDetails = !this._showDetails;
+		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	render() {

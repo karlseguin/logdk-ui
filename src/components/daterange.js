@@ -123,17 +123,17 @@ export class DateRange extends Element {
 		default:
 			if (this._first) {
 				this._first = false;
-				this.ts.lte = null;
+				this.ts.le = null;
 				this.ts.rel = null;
-				this.setGTE(new Date(parseInt(op)));
+				this.setGE(new Date(parseInt(op)));
 				this.applyTime();
 			} else {
-				this.ts.lte = new Date(parseInt(op));
+				this.ts.le = new Date(parseInt(op));
 				this.applyTime();
-				if (this.ts.lte < this.ts.gte) {
-					const x = this.ts.lte;
-					this.ts.lte = this.get;
-					this.setGTE(x);
+				if (this.ts.le < this.ts.ge) {
+					const x = this.ts.le;
+					this.ts.le = this.get;
+					this.setGE(x);
 				}
 				this._first = true;
 			}
@@ -149,21 +149,21 @@ export class DateRange extends Element {
 		const result = relativeTime(op);
 		if (!result) return;
 
-		const [gte, lte] = result;
-		this.ts.lte = lte;
-		this.setGTE(gte);
+		const [ge, le] = result;
+		this.ts.le = le;
+		this.setGE(ge);
 
 		this.ts.rel = op;
 		this.close(true);
 	}
 
-	setGTE(date) {
-		this.ts.gte = date;
-		this._current = new Date(date.getTime()); // don't set to this.gte as we mutate _current
+	setGE(date) {
+		this.ts.ge = date;
+		this._current = new Date(date.getTime()); // don't set to this.ge as we mutate _current
 	}
 
 	render() {
-		this._current = this._current ?? this.ts?.gte;
+		this._current = this._current ?? this.ts?.ge;
 		if (!this._current) {
 			if (!this.ts) this.ts = {};
 			this._current = new Date();
@@ -185,13 +185,13 @@ export class DateRange extends Element {
 		}
 
 		let str = '';
-		if (ts.gte) {
-			str += ts.gte.toLocaleString(undefined, DISPLAY_FORMAT);
+		if (ts.ge) {
+			str += ts.ge.toLocaleString(undefined, DISPLAY_FORMAT);
 		}
-		if (ts.lte) {
-			if (!ts.gte) str += '∞'
-			str += ' - ' + ts.lte.toLocaleString(undefined, DISPLAY_FORMAT);
-		} else if (ts.gte) {
+		if (ts.le) {
+			if (!ts.ge) str += '∞'
+			str += ' - ' + ts.le.toLocaleString(undefined, DISPLAY_FORMAT);
+		} else if (ts.ge) {
 			str += ' - ∞'
 		}
 
@@ -218,7 +218,7 @@ export class DateRange extends Element {
 					<div><span data-op=m2>${MONTHS[current.getUTCMonth()]} ${current.getUTCFullYear()}</span></div>
 				</div>
 				${unsafeHTML(this.buildMonth(current))}
-				<div class=time><label>Start time</label> <input type=time name=start_time value="${this.formatTime(this.ts.gte, '00:00')}"></div>
+				<div class=time><label>Start time</label> <input type=time name=start_time value="${this.formatTime(this.ts.ge, '00:00')}"></div>
 			</div>
 			<div class=datePicker>
 				<div class=header>
@@ -226,7 +226,7 @@ export class DateRange extends Element {
 					<span data-op=next>»</span>
 				</div>
 				${unsafeHTML(this.buildMonth(next))}
-				<div class=time><label>End time</label> <input type=time name=end_time value="${this.formatTime(this.ts.lte, '23:59')}"></div>
+				<div class=time><label>End time</label> <input type=time name=end_time value="${this.formatTime(this.ts.le, '23:59')}"></div>
 			</div>
 			<div>
 				<ul class=shortcuts @click=${this.shortcut}>
@@ -259,14 +259,14 @@ export class DateRange extends Element {
 		const month = date.getUTCMonth();
 
 		let rangeStart = 0
-		if (this.ts.gte) {
-			rangeStart = this.ts.gte.getTime();
+		if (this.ts.ge) {
+			rangeStart = this.ts.ge.getTime();
 			rangeStart -= rangeStart % 86400000; // strip out time
 		}
 
 		let rangeEnd = 0
-		if (this.ts.lte) {
-			rangeEnd = this.ts.lte.getTime();
+		if (this.ts.le) {
+			rangeEnd = this.ts.le.getTime();
 			rangeEnd -= rangeEnd % 86400000;
 		}
 
@@ -334,8 +334,8 @@ export class DateRange extends Element {
 	}
 
 	applyTime() {
-		this.applyTimeTo(this.ts.gte, this.selector('input[name="start_time"]', '00:00'));
-		this.applyTimeTo(this.ts.lte, this.selector('input[name="end_time"]', '23:59'));
+		this.applyTimeTo(this.ts.ge, this.selector('input[name="start_time"]', '00:00'));
+		this.applyTimeTo(this.ts.le, this.selector('input[name="end_time"]', '23:59'));
 	}
 
 	applyTimeTo(date, input, dflt) {

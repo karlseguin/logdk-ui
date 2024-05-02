@@ -1,4 +1,4 @@
-function encodeQuerystring(data) {
+function encodeMap(data) {
 	const keys = Object.keys(data).sort();
 	let qs = '';
 	for (let i = 0; i < keys.length; ++i) {
@@ -8,8 +8,8 @@ function encodeQuerystring(data) {
 	return qs;
 }
 
-function pushQuery(data) {
-	history.pushState({}, '', '#' + encodeQuerystring(data));
+function pushFragment(fragment) {
+	history.pushState({}, '', '#' + fragment);
 }
 
 function parseQuery(qs) {
@@ -25,4 +25,4 @@ function parseQuery(qs) {
 	return params;
 }
 
-export { pushQuery, parseQuery, encodeQuerystring };
+export { pushFragment, parseQuery, encodeMap };

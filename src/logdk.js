@@ -20,7 +20,7 @@ export class Logdk extends LitElement {
 		super();
 		const api = new Api();
 		this._context.setValue({api: api});
-		this.route(top.location.pathname);
+		this.route(top.location.pathname, false);
 	}
 
 	connectedCallback() {
@@ -41,8 +41,7 @@ export class Logdk extends LitElement {
 		if (target.tagName !== 'A' || target.dataset.wc === undefined) return;
 
 		const pathname = target.pathname;
-		if (this.route(pathname)) {
-			history.pushState(null, '', pathname);
+		if (this.route(pathname, true)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -52,7 +51,7 @@ export class Logdk extends LitElement {
 		this.route(top.location.pathname);
 	}
 
-	route(path) {
+	route(path, push) {
 		let component = null;
 		switch (path) {
 		case '':
@@ -61,6 +60,7 @@ export class Logdk extends LitElement {
 		}
 
 		if (component == null) return false;
+		if (push) history.pushState(null, '', path);
 
 		if (this._component && this._component.r == component.r) {
 			const c = this.renderRoot?.querySelector(component['_$litStatic$']);

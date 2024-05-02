@@ -12,7 +12,7 @@ export class Detail extends Element {
 	constructor() {
 		super();
 		this.showNull = false;
-		this.showFilters = false;
+		this.showFilters = true;
 	}
 
 	connectedCallback() {
@@ -37,12 +37,9 @@ export class Detail extends Element {
 		const target = e.target;
 		if (target.tagName !== 'LI') return;
 
+		const row = this.row;
 		const index = target.closest('label').dataset.index;
-		this.dispatchEvent(new CustomEvent('filterClick', {detail: {
-			col: this.row.cols[index],
-			op: target.textContent,
-			value: this.row.data[index],
-		}}));
+		this.dispatchEvent(new CustomEvent('filterClick', {detail: [row.cols[index], target.dataset.op, row.data[index]]}));
 	}
 
 	render() {
@@ -69,7 +66,7 @@ export class Detail extends Element {
 					${showFilters ? html`<ul class=filters @click=${this.filterClick}>${filters.forValue(type, value)}` : ''}
 					<span>${type}</span>
 				</label>
-				${fmt.value(fmt.typed(value, type))}
+				${fmt.value(fmt.typed(value, type)) ?? 'null'}
 			</div>`;
 		});
 
@@ -120,6 +117,7 @@ export class Detail extends Element {
 }
 .toolbar a:hover {
 	color: ${this.css.control.color};
+	border-color: ${this.css.control.border};
 	background: ${this.css.control.background};
 }
 

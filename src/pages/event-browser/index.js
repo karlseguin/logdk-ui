@@ -3,10 +3,6 @@ import { Element, html, css } from 'components/base';
 import { ContextError } from 'error';
 import * as url from 'url';
 import * as fmt from 'fmt';
-import { opToCode } from 'filters'
-
-const TS_OPCODE = opToCode('ts');
-const BETWEEN_OPCODE = opToCode('between');
 
 import './table.js';
 import './filter.js';
@@ -36,14 +32,7 @@ export class EventBrowser extends Element {
 		const args = url.parseQuery(qs);
 		this._dataset = args.dataset ?? null;
 		this._selected = args.selected ?? null;
-		const filters = args.filters ? JSON.parse(args.filters) : {};
-
-		const ts = filters['.ts']
-		if (ts) {
-			filters['.ts'] = ts.length == 2 ? {rel: ts[1]} : {gte: new Date(ts[1]), lte: new Date(ts[2])};
-		}
-
-		this._filters = filters
+		this._filters = args.filters ? JSON.parse(args.filters) : [];
 
 		// can't select this until we've loaded the data
 		this._selectOnData = this._selected;
@@ -85,7 +74,7 @@ export class EventBrowser extends Element {
 	dateChange(e) {
 		this.resetForFirstPage();
 		const ts = e.detail;
-		this._filters['.ts'] = ts.rel ? [TS_OPCODE, ts.rel] : [BETWEEN_OPCODE, ts.gte.getTime(), ts.lte.getTime()];
+		ts.rel ? this._filters.push(['$ts', 'rel', ts.rel]) : this._filters.push(['$ts', 'ge', ts.ge.getTime()], ['$ts', 'le',ts.le.getTime()]);
 		this.reloadData(true);
 		this.pushURL();
 	}
@@ -126,9 +115,20 @@ export class EventBrowser extends Element {
 	}
 
 	filterClick(e) {
+		this._filters.push(e.detail);
+		this.filterChanged();
+	}
+
+	filterRemove(e) {
+		// e.detail is the index of the filte
+		this._filters.splice(e.detail, 1);
+		this.filterChanged();
+	}
+
+	filterChanged() {
 		this.resetForFirstPage();
-		const f = e.detail;
-		this._filters[f.col] = [f.op, f.value];
+		this.filterElement.filters = this._filters;
+		this.filterElement.update();
 		this.reloadData(false);
 		this.pushURL();
 	}
@@ -156,7 +156,7 @@ export class EventBrowser extends Element {
 			return;
 		}
 
-		this.tableElement.data = 'loading';
+		this.tableElement.data = 'loading';;
 		this.pagerElement.paging = null;
 		try {
 			const page = this._page;
@@ -186,17 +186,17 @@ export class EventBrowser extends Element {
 				};
 				this._selectOnData = null;
 			} else {
-				this.detailElement.row = null;
+				// this.detailElement.row = null;
 			}
 		} catch (e) {
 			this.detailElement.row = null;
 			this.pagerElement.paging = null;
-			this.tableElement.err = e;
+			this.tableElement.data = e;
 		}
 	}
 
 	pushURL() {
-		let opts = {}
+		let opts = {};
 		if (this._page) opts.page = this._page;
 		if (this._order) opts.order = this._order;
 		if (this._dataset) opts.dataset = this._dataset;
@@ -206,7 +206,7 @@ export class EventBrowser extends Element {
 		if (filters.length > 2) {
 			opts.filters = filters;
 		}
-		url.pushQuery(opts);
+		url.pushFragment(url.encodeMap(opts));
 	}
 
 	_describe = new Task(this, {
@@ -227,7 +227,7 @@ export class EventBrowser extends Element {
 				}
 				return html`
 				<div class=browser>
-					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
+					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
 					<div class=data>
 						<div class=table>
 							<event-table @headerClick=${this.headerClick} @rowClick=${this.rowClick}></event-table>
@@ -255,10 +255,6 @@ div.browser {
 	display: flex;
 	padding: 0 10px;
 	flex-direction: column;
-}
-event-filter {
-	padding: 5px 0;
-	margin-left: auto;
 }
 .table {
 	flex: 1;

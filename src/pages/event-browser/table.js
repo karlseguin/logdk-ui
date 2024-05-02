@@ -6,8 +6,7 @@ import * as fmt from 'fmt';
 
 export class Table extends Element {
 	static properties = {
-		err: {},
-		data: {}, // either null, 'loading' or an object with a result and order
+		data: {}, // either null, an error, 'loading' or an object with a result and order
 	};
 
 	click(e) {
@@ -15,7 +14,7 @@ export class Table extends Element {
 		if (target.tagName === 'TH') {
 			this.dispatchEvent(new CustomEvent('headerClick', {detail: target.childNodes[0].textContent}));
 		} else {
-			const index = target.closest('tr').dataset.index;
+			const index = target.parentNode.dataset.index;
 			this.dispatchEvent(new CustomEvent('rowClick', {detail: index}));
 		}
 	}
@@ -26,13 +25,13 @@ export class Table extends Element {
 	}
 
 	render() {
-		if (this.err) {
-			return html`<logdk-error message="Error getting rows" .err=${this.err} .absolute=${false}></logdk-error>`
+		const data = this.data;
+		if (!data) {
+			return;
 		}
 
-		const data = this.data;
-		if (!this.data) {
-			return;
+		if (data instanceof Error) {
+			return html`<logdk-error message="Error getting rows" .err=${data} .absolute=${false}></logdk-error>`
 		}
 
 		if (this.data === 'loading') {
@@ -91,22 +90,7 @@ export class Table extends Element {
 			for (let j = 0; j < row.length; j += 1) {
 				const type = types[j];
 				const value = fmt.typed(row[j], type);
-
-				if (value === null) {
-					if (type === 'varchar') str += '<td>null';
-					else str += '<td>';
-					continue;
-				}
-				switch (typeof(value)) {
-				case 'boolean':
-					str += '<td>' + value;
-					break;
-				case 'number':
-					str += '<td>' + value;
-					break;
-				default:
-					str += '<td>' + fmt.value(value);
-				}
+				str += '<td>' + (fmt.value(value) ?? '﹘');
 			}
 		}
 

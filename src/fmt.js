@@ -19,7 +19,7 @@ function value(value) {
 }
 
 function typed(value, type) {
-	if (value === null) return 'null';
+	if (value === null) return null;
 	switch (type) {
 		case 'timestamp':
 		case 'timestamptz':

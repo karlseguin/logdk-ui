@@ -12,7 +12,7 @@ class Element extends LitElement {
 		header: {background: unsafeCSS`#ffe6fa`, border: unsafeCSS`#ead1e6`},
 		selected: {background: unsafeCSS`#c3f9ff`, border: unsafeCSS`#99d6dd`, color: unsafeCSS`#000`},
 		disabled: {background: unsafeCSS`#eee`, color: unsafeCSS`#777`, border: unsafeCSS`#ddd`},
-		control: {background: unsafeCSS`#555`, color: unsafeCSS`#fff`},
+		control: {background: unsafeCSS`#555`, color: unsafeCSS`#fff`, border: unsafeCSS`#444`},
 	};
 
 	context = new ContextConsumer(this, context);

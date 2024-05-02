@@ -1,5 +1,5 @@
 import { ContextError } from 'error';
-import { encodeQuerystring } from 'url';
+import { encodeMap } from 'url';
 
 export class Api {
 	async describe(opts) {
@@ -7,13 +7,7 @@ export class Api {
 	}
 
 	async getEvents(dataset, filters, opts) {
-		let args = filters;
-		if ('dataset' in args) {
-			// not necessary, but removing a duplicate 'dataset' from filters is cleaner
-			args = { ... args }
-			delete(args.dataset);
-		}
-		return request(`/api/1/datasets/${dataset}/events?${encodeQuerystring(args)}`, opts);
+		return request(`/api/1/datasets/${dataset}/events?${encodeMap(filters)}`, opts);
 	}
 };
 
