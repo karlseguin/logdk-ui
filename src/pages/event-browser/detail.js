@@ -150,6 +150,7 @@ label {
 .filters {
 	gap: 5px;
 	font-size: 80%;
+	user-select: none;
 	margin-left: 5px;
 	display: inline-flex;
 }

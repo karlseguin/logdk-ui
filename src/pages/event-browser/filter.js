@@ -1,13 +1,15 @@
 import { Element, html, css } from 'components/base';
 import 'components/select';
 import 'components/daterange';
-import { nameToOp } from 'filters'
+import { nameToOp } from 'filters';
+import * as fmt from 'fmt';
 
 export class Filter extends Element {
 	static properties = {
+		data: {type: Object},
 		dataset: {type: String},
 		datasets: {type: Array},
-		filters: {type: Object}
+		filters: {type: Object},
 	};
 
 	constructor() {
@@ -44,7 +46,7 @@ export class Filter extends Element {
 
 		return html`
 			<div class=dynamic @click=${this.filterRemove}>
-				${filters.map(this.renderFilter)}
+				${this.data ? filters.map((f, i) => this.renderFilter(f, i)) : ''}
 			</div>
 			<div class=static>
 				<logdk-select @change=${this.datasetChange} .options=${this._dataset_lookup} .selected=${this.dataset}></logdk-select>
@@ -54,8 +56,12 @@ export class Filter extends Element {
 	}
 
 	renderFilter(f, i) {
-		if (f[0] == '$ts') return '';
-		return html`<div class=field data-op=${i}>${f[0]} ${nameToOp(f[1])} ${f[2]}</div>`
+		const col = f[0];
+		if (f == '$ts') return '';
+
+		const index = this.data.cols.indexOf(col);
+		const type = this.data.types[index];
+		return html`<div class=field data-op=${i}>${col} ${nameToOp(f[1])} ${fmt.value(fmt.typed(f[2], type))}</div>`
 	}
 
 	static styles = [

@@ -66,7 +66,11 @@ export class EventBrowser extends Element {
 
 	datasetChange(e) {
 		this.resetForFirstPage();
+		this._filters = [];
+		this._page = 1;
+		this._order = '-$id';
 		this._dataset = e.detail;
+		this.filterChanged();
 		this.reloadData(true);
 		this.pushURL();
 	}
@@ -74,7 +78,14 @@ export class EventBrowser extends Element {
 	dateChange(e) {
 		this.resetForFirstPage();
 		const ts = e.detail;
-		ts.rel ? this._filters.push(['$ts', 'rel', ts.rel]) : this._filters.push(['$ts', 'ge', ts.ge.getTime()], ['$ts', 'le',ts.le.getTime()]);
+		let filters = this._filters.filter((f) => f[0] !== '$ts');
+		if (ts.rel) {
+			filters.push(['$ts', 'rel', ts.rel])
+		} else {
+			if (ts.ge) filters.push(['$ts', 'ge', ts.ge.getTime()]);
+			if (ts.le) filters.push(['$ts', 'le',ts.le.getTime()]);
+		}
+		this._filters = filters;
 		this.reloadData(true);
 		this.pushURL();
 	}
@@ -156,7 +167,7 @@ export class EventBrowser extends Element {
 			return;
 		}
 
-		this.tableElement.data = 'loading';;
+		this.tableElement.data = 'loading';
 		this.pagerElement.paging = null;
 		try {
 			const page = this._page;
@@ -170,6 +181,7 @@ export class EventBrowser extends Element {
 			const data = res.body;
 			this._data = data;
 			this.tableElement.data = {result: data, order: order};
+			this.filterElement.data = {cols: data.cols, types: data.types};
 			if (data) {
 				this.pagerElement.paging = {
 					page: page,
