@@ -37,25 +37,19 @@ function typed(value, type) {
 }
 
 function relativeTime(op) {
-	if (!op || op.length < 4) return null;
+	if (!op) return null;
 
 	const n = new Date();
-	const type = op.substring(0, 4);
-	const data = op.substr(4);
-
-	if (type === 'min-') {
-		// 60 000 -> minutes to milliseconds
-
-		return [new Date(n - parseInt(data) * 60000), n];
-	}
-
-	if (type !== 'rel-') {
-		return null;
+	const mins = parseInt(op);
+	if (isNaN(mins) == false) {
+		return [new Date(n - mins * 60000), n];
 	}
 
 	let gte, lte;
-
-	switch(data) {
+	switch(op) {
+	case 't':
+		lte = n;
+		gte = new Date(n.getTime() - n.getTime() % 86400000);
 	case 'y':
 		lte = new Date(n.getTime() - n.getTime() % 86400000 - 1000);
 		gte = new Date(lte.getTime() - 86400000 + 1000);

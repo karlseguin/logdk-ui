@@ -1,4 +1,4 @@
-import { Element, html, css } from 'components/base';
+import { Element, html, css, unsafeCSS } from 'components/base';
 import 'components/select';
 import 'components/daterange';
 import { nameToOp } from 'filters';
@@ -22,7 +22,15 @@ export class Filter extends Element {
 	}
 
 	dateChange(e) {
-		this.dispatchEvent(new CustomEvent('dateChange', {detail: e.detail}));
+		const ts = e.detail;
+		let filters = [];
+		if (ts.rel) {
+			filters.push(['$ts', 'rel', ts.rel])
+		} else {
+			if (ts.ge) filters.push(['$ts', 'ge', ts.ge.getTime()]);
+			if (ts.le) filters.push(['$ts', 'le',ts.le.getTime()]);
+		}
+		this.dispatchEvent(new CustomEvent('dateChange', {detail: filters}));
 	}
 
 	filterRemove(e) {
@@ -42,7 +50,10 @@ export class Filter extends Element {
 		}
 
 		const filters = this.filters;
-		const ts = filters.find((f) => f[0] == '$ts') ?? {};
+		const ts = filters.reduce((acc, f) => {
+			if (f[0] == '$ts') acc[f[1]] = f[1] == 'rel' ? f[2] : new Date(f[2]);
+			return acc;
+		}, {});
 
 		return html`
 			<div class=dynamic @click=${this.filterRemove}>
@@ -57,7 +68,7 @@ export class Filter extends Element {
 
 	renderFilter(f, i) {
 		const col = f[0];
-		if (f == '$ts') return '';
+		if (col == '$ts') return '';
 
 		const index = this.data.cols.indexOf(col);
 		const type = this.data.types[index];
@@ -92,13 +103,14 @@ export class Filter extends Element {
 	border-radius: 5px;
 	margin-right: 10px;
 	white-space: nowrap;
-	background: ${this.css.selected.background};
-	border: 1px solid ${this.css.selected.border};
+	color: ${unsafeCSS(this.css.sel.fg)};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
 }
 .field:hover {
-	color: ${this.css.control.color};
-	border-color: ${this.css.control.border};
-	background: ${this.css.control.background};
+	color: ${unsafeCSS(this.css.hi.fg)};
+	border-color: ${unsafeCSS(this.css.hi.bd)};
+	background: ${unsafeCSS(this.css.hi.bg)};
 	text-decoration: line-through;
 }
 		`

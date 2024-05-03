@@ -1,21 +1,22 @@
-import { Element, html, css } from 'components/base';
+import { Element, html, css, unsafeCSS } from 'components/base';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { relativeTime } from 'fmt';
 
 const MONTHS = Array.from({length: 12}, (_, i) => new Date(2000, i, 1).toLocaleDateString(undefined, {'month': 'long'}));
 const DISPLAY_FORMAT = {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'};
 const SHORTCUTS = {
-	'min-5': 'last 5 minutes',
-	'min-15': 'last 15 minutes',
-	'min-60': 'last hour',
-	'min-240': 'last 4 hours',
-	'min-720': 'last 12 hours',
-	'min-1440': 'last 24 hours',
-	'min-10080': 'last 7 days',
-	'rel-y': 'yesterday',
-	'rel-cm': 'current month',
-	'rel-lm': 'last month',
-	'rel-ytd': 'year to date',
+	5: 'last 5 minutes',
+	15: 'last 15 minutes',
+	60: 'last hour',
+	240: 'last 4 hours',
+	720: 'last 12 hours',
+	1440: 'last 24 hours',
+	10080: 'last 7 days',
+	't': 'today',
+	'y': 'yesterday',
+	'cm': 'current month',
+	'lm': 'last month',
+	'ytd': 'year to date',
 };
 
 const MODE_DATE_PICKER = 1;
@@ -125,7 +126,7 @@ export class DateRange extends Element {
 				this._first = false;
 				this.ts.le = null;
 				this.ts.rel = null;
-				this.setGE(new Date(parseInt(op)));
+				this.ts.ge = new Date(parseInt(op));
 				this.applyTime();
 			} else {
 				this.ts.le = new Date(parseInt(op));
@@ -403,15 +404,15 @@ input[name="display"] {
 }
 
 .monthPicker > div > div:hover {
-	color: ${this.css.hover.color};
-	background: ${this.css.hover.background};
-	border-color: ${this.css.hover.border};
+	color: ${unsafeCSS(this.css.hov.fg)};
+	background: ${unsafeCSS(this.css.hov.bg)};
+	border-color: ${unsafeCSS(this.css.hov.bd)};
 }
 
 .monthPicker > div > div.selected {
-	color: ${this.css.selected.color};
-	background: ${this.css.selected.background};
-	border-color: ${this.css.selected.border};
+	color: ${unsafeCSS(this.css.sel.color)};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border-color: ${unsafeCSS(this.css.sel.bd)};
 }
 
 .monthPicker input {
@@ -448,8 +449,8 @@ input[name="display"] {
 }
 
 .datePicker .header span:hover {
-	color: ${this.css.control.color};
-	background: ${this.css.control.background};
+	color: ${unsafeCSS(this.css.hi.fg)};
+	background: ${unsafeCSS(this.css.hi.bg)};
 	border-radius: 5px;
 }
 
@@ -468,8 +469,9 @@ input[name="display"] {
 .datePicker th {
 	font-weight: normal;
 	padding-bottom: 0;
-	background: ${this.css.header.background};
-	border: 1px solid ${this.css.header.border};
+	color: ${unsafeCSS(this.css.hdr.fg)};
+	background: ${unsafeCSS(this.css.hdr.bg)};
+	border: 1px solid ${unsafeCSS(this.css.hdr.bd)};
 }
 
 .datePicker td {
@@ -478,18 +480,19 @@ input[name="display"] {
 }
 
 .datePicker td.oob {
-	color: ${this.css.disabled.color};
-	border-color: ${this.css.disabled.border};
-	background: ${this.css.disabled.background};
+	color: ${unsafeCSS(this.css.off.fg)};
+	border-color: ${unsafeCSS(this.css.off.bd)};
+	background: ${unsafeCSS(this.css.off.bg)};
 }
 
 .datePicker td:hover{
-	background: ${this.css.hover.background};
+	color: ${unsafeCSS(this.css.hov.fg)};
+	background: ${unsafeCSS(this.css.hov.bg)};
 }
 
 .datePicker td.selected {
-	background: ${this.css.selected.background};
-	border: 1px solid ${this.css.selected.border};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
 }
 
 .datePicker .time {
@@ -514,8 +517,9 @@ input[name="display"] {
 }
 
 .shortcuts li:hover {
-	background: ${this.css.hover.background};
-	border: 1px solid ${this.css.hover.border};
+	color: ${unsafeCSS(this.css.hov.fg)};
+	background: ${unsafeCSS(this.css.hov.bg)};
+	border: 1px solid ${unsafeCSS(this.css.hov.bd)};
 }
 
 .shortcuts input {

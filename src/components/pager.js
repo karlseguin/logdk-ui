@@ -1,4 +1,4 @@
-import { Element, html, css } from 'components/base';
+import { Element, html, css, unsafeCSS } from 'components/base';
 import {map} from 'lit/directives/map.js';
 import {range} from 'lit/directives/range.js';
 import {styleMap} from 'lit/directives/style-map.js';
@@ -97,12 +97,13 @@ a {
 }
 a:hover {
 	text-decoration: none;
-	border-color: ${this.css.hover.border};
-	background: ${this.css.hover.background};
+	color: ${unsafeCSS(this.css.hov.fg)};
+	border-color: ${unsafeCSS(this.css.hov.bd)};
+	background: ${unsafeCSS(this.css.hov.bg)};
 }
 a.active {
-	color: ${this.css.control.color};
-	background: ${this.css.control.background};
+	color: ${unsafeCSS(this.css.hi.fg)};
+	background: ${unsafeCSS(this.css.hi.bg)};
 }
 span {
 	width: 30px;

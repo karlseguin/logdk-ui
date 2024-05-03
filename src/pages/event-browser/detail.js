@@ -1,4 +1,4 @@
-import { Element, html, css } from 'components/base';
+import { Element, html, css, unsafeCSS } from 'components/base';
 import * as fmt from 'fmt';
 import * as filters from 'filters';
 
@@ -17,18 +17,15 @@ export class Detail extends Element {
 
 	connectedCallback() {
 		super.connectedCallback();
-		window.addEventListener('keyup', this.keyup.bind(this));
 		window.addEventListener('keydown', this.keydown.bind(this));
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventlistener('keyup', this.keyup.bind(this));
 		window.removeEventlistener('keydown', this.keydown.bind(this));
 	}
 
-	keyup(e) { if (e.key === 'Shift') this.showFilters = false; }
-	keydown(e) { this.showFilters = e.key === 'Shift'; }
+	keydown(e) { if (e.key === 'F') if (this.row) this.showFilters = !this.showFilters; }
 	toggleFilters() { this.showFilters = !this.showFilters; }
 	toggleNull() { this.showNull = !this.showNull; }
 	close() { this.dispatchEvent(new CustomEvent('close', null)); }
@@ -116,21 +113,22 @@ export class Detail extends Element {
 	font-size: 100%;
 }
 .toolbar a:hover {
-	color: ${this.css.control.color};
-	border-color: ${this.css.control.border};
-	background: ${this.css.control.background};
+	color: ${unsafeCSS(this.css.hi.fg)};
+	border-color: ${unsafeCSS(this.css.hi.bd)};
+	background: ${unsafeCSS(this.css.hi.bg)};
 }
 
 .toolbar .off {
 	text-decoration: line-through;
-	color: ${this.css.disabled.color};
 	border: 1px solid transparent;
-	background: ${this.css.disabled.background};
+	color: ${unsafeCSS(this.css.off.fg)};
+	background: ${unsafeCSS(this.css.off.bg)};
 }
 
 .toolbar .on {
-	background: ${this.css.selected.background};
-	border: 1px solid ${this.css.selected.border};
+	color: ${unsafeCSS(this.css.sel.fg)};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
 }
 
 .field {
@@ -158,14 +156,14 @@ label {
 	cursor: pointer;
 	white-space: nowrap;
 	font-family: monospace;
-	border: 1px solid ${this.css.control.background};;
+	border: 1px solid ${unsafeCSS(this.css.hi.bg)};
 	border-radius: 4px;
 	padding: 0px 4px;
 	align-self: center;
 }
 .filters li:hover {
-	color: ${this.css.control.color};
-	background: ${this.css.control.background};
+	color: ${unsafeCSS(this.css.hi.fg)};
+	background: ${unsafeCSS(this.css.hi.bg)};
 }
 span {
 	font-weight: normal;

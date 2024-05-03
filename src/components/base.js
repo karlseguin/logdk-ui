@@ -8,11 +8,11 @@ class Element extends LitElement {
 	static css = {
 		form: styles.form,
 		reset: styles.reset,
-		hover: {background: unsafeCSS`#ffc`, border: unsafeCSS`#d3d388`, color: unsafeCSS`#000`},
-		header: {background: unsafeCSS`#ffe6fa`, border: unsafeCSS`#ead1e6`},
-		selected: {background: unsafeCSS`#c3f9ff`, border: unsafeCSS`#99d6dd`, color: unsafeCSS`#000`},
-		disabled: {background: unsafeCSS`#eee`, color: unsafeCSS`#777`, border: unsafeCSS`#ddd`},
-		control: {background: unsafeCSS`#555`, color: unsafeCSS`#fff`, border: unsafeCSS`#444`},
+		hdr: {bg: '#ffe6fa', bd: '#ead1e6'},
+		sel: {bg: '#c3f9ff', bd: '#99d6dd', fg: '#000'},
+		hov: {bg: '#ffc', bd: '#d3d388', fg: '#000'},
+		off: {bg: '#eee', bd: '#ddd', fg: '#777'},
+		hi: {bg: '#555', bd: '#444', fg: '#fff'},
 	};
 
 	context = new ContextConsumer(this, context);
@@ -22,4 +22,4 @@ class Element extends LitElement {
 	selector(s) { return this.renderRoot?.querySelector(s) ?? null; }
 };
 
-export { Element, html, css };
+export { Element, html, css, unsafeCSS };

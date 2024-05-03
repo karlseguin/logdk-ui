@@ -1,5 +1,5 @@
 import { Task } from '@lit/task';
-import { Element, html, css } from 'components/base';
+import { Element, html, css, unsafeCSS } from 'components/base';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { ContextError } from 'error';
 import * as fmt from 'fmt';
@@ -140,8 +140,8 @@ th {
 	text-align: left;
 	font-weight: normal;
 	padding-right: 20px;
-	background: ${this.css.header.background};
-	border: 1px solid ${this.css.header.border};
+	background: ${unsafeCSS(this.css.hdr.bg)};
+	border: 1px solid ${unsafeCSS(this.css.hdr.bd)};
 	border-top: 0;
 }
 
@@ -168,8 +168,8 @@ tbody tr:nth-child(odd) {
 }
 tbody tr:hover td {
 	cursor: pointer;
-	color: ${this.css.hover.color};
-	background: ${this.css.hover.background};
+	color: ${unsafeCSS(this.css.hov.fg)};
+	background: ${unsafeCSS(this.css.hov.bg)};
 }
 		`
 	];

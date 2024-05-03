@@ -1,5 +1,6 @@
 import { Task } from '@lit/task';
 import { Element, html, css } from 'components/base';
+import {styleMap} from 'lit/directives/style-map.js';
 import { ContextError } from 'error';
 import * as url from 'url';
 import * as fmt from 'fmt';
@@ -70,24 +71,14 @@ export class EventBrowser extends Element {
 		this._page = 1;
 		this._order = '-ldk_id';
 		this._dataset = e.detail;
-		this.filterChanged();
-		this.reloadData(true);
-		this.pushURL();
+		this.filterChanged(true);
 	}
 
 	dateChange(e) {
-		this.resetForFirstPage();
-		const ts = e.detail;
 		let filters = this._filters.filter((f) => f[0] !== '$ts');
-		if (ts.rel) {
-			filters.push(['$ts', 'rel', ts.rel])
-		} else {
-			if (ts.ge) filters.push(['$ts', 'ge', ts.ge.getTime()]);
-			if (ts.le) filters.push(['$ts', 'le',ts.le.getTime()]);
-		}
+		filters.push(...e.detail);
 		this._filters = filters;
-		this.reloadData(true);
-		this.pushURL();
+		this.filterChanged(true);
 	}
 
 	rowClick(e) {
@@ -127,20 +118,20 @@ export class EventBrowser extends Element {
 
 	filterClick(e) {
 		this._filters.push(e.detail);
-		this.filterChanged();
+		this.filterChanged(true);
 	}
 
 	filterRemove(e) {
 		// e.detail is the index of the filte
 		this._filters.splice(e.detail, 1);
-		this.filterChanged();
+		this.filterChanged(true);
 	}
 
-	filterChanged() {
+	filterChanged(total) {
 		this.resetForFirstPage();
 		this.filterElement.filters = this._filters;
 		this.filterElement.update();
-		this.reloadData(false);
+		this.reloadData(total);
 		this.pushURL();
 	}
 
@@ -276,7 +267,7 @@ div.browser {
 .data {
 	display: flex;
 }
-		`
+		`,
 	];
 }
 
