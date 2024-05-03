@@ -40,10 +40,10 @@ export class Detail extends Element {
 	}
 
 	render() {
-		if (this.row == null) {
+		const row = this.row;
+		if (!row) {
 			return html``;
 		}
-		const row = this.row;
 
 		let nulls = 0;
 		const cols = row.cols;

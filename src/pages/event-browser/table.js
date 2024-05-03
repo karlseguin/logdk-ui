@@ -15,7 +15,8 @@ export class Table extends Element {
 			this.dispatchEvent(new CustomEvent('headerClick', {detail: target.childNodes[0].textContent}));
 		} else {
 			const index = target.parentNode.dataset.index;
-			this.dispatchEvent(new CustomEvent('rowClick', {detail: index}));
+			// index can be null if we're clicking on the dummy "no results found row"
+			if (index) this.dispatchEvent(new CustomEvent('rowClick', {detail: index}));
 		}
 	}
 

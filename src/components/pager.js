@@ -50,7 +50,7 @@ export class Pager extends Element {
 
 		const smallPager = pages <= 8;
 
-		let skipToStart = '';
+		let skipToStart = null;
 		if (!smallPager) {
 			const cutoff = 6;
 			if (page == cutoff) skipToStart = html`<a data-page=1>1</a>`;
@@ -64,22 +64,31 @@ export class Pager extends Element {
 			else if (page < cutoff) skipToEnd = html`<span>..</span><a data-page=${pages}>${pages}</a>`;
 		}
 
-		return html `<div class=pager @click=${this.click}>
-			<a data-page=${page - 1} class=${smallPager || page == 1 ? 'hidden' : ''}>&lt;</a>
-			${ skipToStart }
-			${map(range(first, last+1), (i) => {
-				return i == page ? html`<a class=active>${i}</a>` : html`<a data-page=${i}>${i}</a>`
-			})}
-			${ skipToEnd }
-			<a data-page=${page + 1} class=${smallPager || page == pages ? 'hidden' : ''}>&gt;</a>
-		</div>`
+		return html `<div>
+			<div class=total>total: ${total}</div>
+			<div class=pager @click=${this.click}>
+				<a data-page=${page - 1} class=${smallPager || page == 1 ? 'hidden' : ''}>⇦</a>${ skipToStart }${map(range(first, last+1), (i) => {
+					return i == page ? html`<a class=active>${i}</a>` : html`<a data-page=${i}>${i}</a>`
+				})}${ skipToEnd }<a data-page=${page + 1} class=${smallPager || page == pages ? 'hidden' : ''}>⇨</a>
+			</div>
+		</div>`;
 	}
 
 	static styles = [
 		css`
+:host > div {
+	display: flex;
+}
+.total {
+	align-self: flex-start;
+	font-size: 80%;
+	padding: 2px 5px;
+	border-radius: 5px;
+}
 .pager {
+	margin-top: 15px;
+	margin-left: auto;
 	user-select: none;
-	margin-top: 30px;
 	text-align: center;
 }
 .hidden {
@@ -87,10 +96,10 @@ export class Pager extends Element {
 }
 a {
 	cursor: pointer;
-	width: 30px;
+	min-width: 30px;
 	text-align: center;
-	margin: 0 4px;
-	padding: 2px 0;
+	margin: 0 2px;
+	padding: 0 2px;
 	display: inline-block;
 	border-radius: 4px;
 	border: 1px solid #ddd;

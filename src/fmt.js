@@ -1,4 +1,4 @@
-const dateFormat = {month: 'short', day: 'numeric', year: 'numeric'};
+const dateFormat = {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'};
 
 function dateTime(dt, long) {
 	const date = dt.toLocaleDateString(undefined, dateFormat);

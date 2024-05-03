@@ -24,8 +24,10 @@ export class Filter extends Element {
 	dateChange(e) {
 		const ts = e.detail;
 		let filters = [];
-		if (ts.rel) {
-			filters.push(['$ts', 'rel', ts.rel])
+		const rel = ts.rel;
+		if (rel) {
+			const mins = parseInt(rel)
+			filters.push(['$ts', 'rel', isNaN(mins) ? ts.rel : mins])
 		} else {
 			if (ts.ge) filters.push(['$ts', 'ge', ts.ge.getTime()]);
 			if (ts.le) filters.push(['$ts', 'le',ts.le.getTime()]);

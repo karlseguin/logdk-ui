@@ -6,8 +6,8 @@ export class Api {
 		return request('/api/1/describe', opts);
 	}
 
-	async getEvents(dataset, filters, opts) {
-		return request(`/api/1/datasets/${dataset}/events?${encodeMap(filters)}`, opts);
+	async getEvents(dataset, args, opts) {
+		return request(`/api/1/datasets/${dataset}/events?${encodeMap(args)}`, opts);
 	}
 };
 
