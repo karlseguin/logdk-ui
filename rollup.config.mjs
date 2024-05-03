@@ -6,7 +6,10 @@ import summary from 'rollup-plugin-summary';
 
 export default {
 	plugins: [
-		rollupPluginHTML({input: 'index.html', extractAssets: false}),
+		rollupPluginHTML({
+			input: 'index.html',
+			extractAssets: false,
+		}),
 		resolve({
 			preferBuiltins: false,
 			moduleDirectories: ['node_modules', 'src'],
