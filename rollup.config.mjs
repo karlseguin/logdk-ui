@@ -1,4 +1,5 @@
 import {rollupPluginHTML} from '@web/rollup-plugin-html';
+import v from "rollup-plugin-visualizer";
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
@@ -17,6 +18,7 @@ export default {
 		minifyHTML.default(),
 		terser({ecma: 2021, module: true, warnings: true}),
 		summary(),
+		v.visualizer({brotliSize: true})
 	],
 	output: {dir: 'dist'},
 	preserveEntrySignatures: 'strict',

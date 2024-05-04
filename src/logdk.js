@@ -1,5 +1,5 @@
 import { ContextProvider } from '@lit/context';
-import {html, literal} from 'lit/static-html.js';
+import {html, literal, unsafeStatic} from 'lit/static-html.js';
 import { LitElement, css } from 'lit-element';
 
 import * as url from 'url';
@@ -7,6 +7,7 @@ import * as styles from 'styles';
 import { context } from 'context';
 
 import { Api } from  'api';
+import 'pages/sql-browser';
 import 'pages/event-browser';
 
 export class Logdk extends LitElement {
@@ -31,8 +32,8 @@ export class Logdk extends LitElement {
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventlistener('click', this.click.bind(this));
-		window.removeEventlistener('popstate', this.popstate.bind(this));
+		window.removeEventListener('click', this.click.bind(this));
+		window.removeEventListener('popstate', this.popstate.bind(this));
 	}
 
 	click(e) {
@@ -42,6 +43,7 @@ export class Logdk extends LitElement {
 
 		const pathname = target.pathname;
 		if (this.route(pathname, true)) {
+
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -54,16 +56,19 @@ export class Logdk extends LitElement {
 	route(path, push) {
 		let component = null;
 		switch (path) {
-		case '':
-		case '/':
-			component = literal`event-browser`;
+		case '': case '/':
+			component = 'event-browser';
+			break;
+		case '/sql':
+			component = 'sql-browser';
+			break;
 		}
 
 		if (component == null) return false;
 		if (push) history.pushState(null, '', path);
 
-		if (this._component && this._component.r == component.r) {
-			const c = this.renderRoot?.querySelector(component['_$litStatic$']);
+		if (this._component === component) {
+			const c = this.renderRoot?.querySelector(component);
 			if (c.popstate) c.popstate();
 		} else {
 			this._component = component;
@@ -72,35 +77,42 @@ export class Logdk extends LitElement {
 	}
 
 	render() {
+		const c = this._component
+		const tag = literal`${unsafeStatic(c)}`
 		return html`
 			<header><nav><ul>
-				<li><a href="/" data-wc>home</a>
+				<li><a class=${c === 'event-browser' ? 'on' : null} href="/" data-wc>home</a>
+				<li><a class=${c === 'sql-browser' ? 'on' : null} href="/sql" data-wc>sql</a>
 			</ul></nav></header>
-			<${this._component}></${this._component}>
+			<${tag}></${tag}>
 		`;
 	}
 
 	static styles = [
 		styles.reset,
 		css`
-			header {
-				padding: 0 20px;
-				background: #fff;
-				border-bottom: 1px solid #ff79c6;
-			}
-			li {
-				display: inline-block;
-			}
-			a {
-				color: #222;
-				line-height: 40px;
-				padding: 0 20px;
-				display: inline-block;
-			}
-			a:hover {
-				color: #fff;
-				background: #ff79c6;
-			}
+header {
+	padding: 0 20px;
+	background: #fff;
+	border-bottom: 1px solid #ff79c6;
+}
+ul {
+	display: flex;
+	flex-direction: row;
+}
+a {
+	color: #222;
+	line-height: 35px;
+	padding: 0 20px;
+	display: inline-block;
+}
+a.on {
+	background: #ffdff1;
+}
+a:hover {
+	color: #fff;
+	background: #ff79c6;
+}
 		`
 	];
 }

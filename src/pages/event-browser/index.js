@@ -1,15 +1,14 @@
 import { Task } from '@lit/task';
 import { Element, html, css } from 'components/base';
-import {styleMap} from 'lit/directives/style-map.js';
 import { ContextError } from 'error';
 import * as url from 'url';
 import * as fmt from 'fmt';
 
-import './table.js';
 import './filter.js';
-import './detail.js';
 import 'components/pager.js';
 import 'components/dialogs';
+import 'components/rowview.js';
+import 'components/datatable.js';
 
 export class EventBrowser extends Element {
 	constructor() {
@@ -25,7 +24,7 @@ export class EventBrowser extends Element {
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventlistener('keydown', this.keydown.bind(this));
+		window.removeEventListener('keydown', this.keydown.bind(this));
 	}
 
 	restoreFromQuery() {
@@ -47,10 +46,10 @@ export class EventBrowser extends Element {
 		this._limit = isNaN(limit) ? 100 : limit;
 	}
 
-	get tableElement() { return this.selector('event-table'); }
 	get pagerElement() { return this.selector('logdk-pager'); }
 	get filterElement() { return this.selector('event-filter'); }
-	get detailElement() { return this.selector('event-detail'); }
+	get detailElement() { return this.selector('logdk-rowview'); }
+	get tableElement() { return this.selector('logdk-datatable'); }
 
 	popstate() {
 		this.resetForFirstPage();
@@ -173,13 +172,12 @@ export class EventBrowser extends Element {
 			this._data = data;
 			this.tableElement.data = {result: data, order: order};
 			this.filterElement.data = {cols: data.cols, types: data.types};
-			if (data) {
-				this.pagerElement.paging = {
-					page: page,
-					limit: limit,
-					total: data.total,
-				};
-			}
+
+			this.pagerElement.paging = {
+				page: page,
+				limit: limit,
+				total: data.total,
+			};
 
 			if (this._selectOnData) {
 				this.detailElement.row = {
@@ -188,8 +186,6 @@ export class EventBrowser extends Element {
 					data: data.rows[this._selectOnData],
 				};
 				this._selectOnData = null;
-			} else {
-				// this.detailElement.row = null;
 			}
 		} catch (e) {
 			this.detailElement.row = null;
@@ -233,10 +229,10 @@ export class EventBrowser extends Element {
 					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
 					<div class=data>
 						<div class=table>
-							<event-table @headerClick=${this.headerClick} @rowClick=${this.rowClick}></event-table>
+							<logdk-datatable .sortable=${true} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
 							<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
 						</div>
-						<event-detail @close=${this.detailClose} @filterClick=${this.filterClick}></event-detail>
+						<logdk-rowview @close=${this.detailClose} @filterClick=${this.filterClick} .filterable=${true}></logdk-rowview>
 					</div>
 				</div>
 				`;

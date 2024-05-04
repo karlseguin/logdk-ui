@@ -2,11 +2,12 @@ import { Element, html, css, unsafeCSS } from 'components/base';
 import * as fmt from 'fmt';
 import * as filters from 'filters';
 
-export class Detail extends Element {
+export class RowView extends Element {
 	static properties = {
 		row: {type: Object},
 		showNull: {state: true},
 		showFilters: {state: true},
+		filterable: {type: Object},
 	};
 
 	constructor() {
@@ -17,12 +18,16 @@ export class Detail extends Element {
 
 	connectedCallback() {
 		super.connectedCallback();
-		window.addEventListener('keydown', this.keydown.bind(this));
+		if (this.filterable) {
+			window.addEventListener('keydown', this.keydown.bind(this));
+		}
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventlistener('keydown', this.keydown.bind(this));
+		if (this.filterable) {
+			window.removeEventListener('keydown', this.keydown.bind(this));
+		}
 	}
 
 	keydown(e) { if (e.key === 'F') if (this.row) this.showFilters = !this.showFilters; }
@@ -49,7 +54,7 @@ export class Detail extends Element {
 		const cols = row.cols;
 		const types = row.types;
 		const showNull = this.showNull;
-		const showFilters = this.showFilters;
+		const showFilters = this.filterable && this.showFilters;
 
 		const fields = row.data.map((value, i) => {
 			if (value == null) {
@@ -71,7 +76,7 @@ export class Detail extends Element {
 		const filtersClass = showFilters ? 'on' : 'off'
 		return html`<div class=details>
 			<ul class=toolbar>
-				<a class=${filtersClass} @click=${this.toggleFilters}>filters</a>
+				${ this.filterable ? html`<a class=${filtersClass} @click=${this.toggleFilters}>filters</a>` : ''}
 				<a class=${nullClass} @click=${this.toggleNull}>${nulls} null${ nulls == 1 ? '' : 's'}</a>
 				<a class=close @click=${this.close}>x</a>
 			</ul>
@@ -134,6 +139,7 @@ export class Detail extends Element {
 .field {
 	margin: 1px 0;
 	padding: 2px 10px;
+	overflow-wrap: break-word;
 	border-bottom: 1px solid #eee;
 }
 .field:last-of-type {
@@ -175,4 +181,4 @@ span {
 	];
 }
 
-customElements.define('event-detail', Detail);
+customElements.define('logdk-rowview', RowView);

@@ -13,7 +13,7 @@ class Error extends Element {
 	constructor() {
 		super();
 		this.absolute = true;
-		this._showDetails = false;
+		this._showDetails = true;
 	}
 
 	details() {

@@ -5,7 +5,8 @@ function encodeMap(data) {
 		const key = keys[i];
 		qs += encodeURIComponent(key) + '=' + encodeURIComponent(data[key]) + '&';
 	}
-	return qs;
+	// strip out trailing &
+	return qs.length > 0 ? qs.slice(0, -1) : '';
 }
 
 function pushFragment(fragment) {

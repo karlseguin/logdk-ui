@@ -43,8 +43,8 @@ export class DateRange extends Element {
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventlistener('click', this.click.bind(this));
-		window.removeEventlistener('keydown', this.keydown.bind(this));
+		window.removeEventListener('click', this.click.bind(this));
+		window.removeEventListener('keydown', this.keydown.bind(this));
 	}
 
 	keydown(e) {

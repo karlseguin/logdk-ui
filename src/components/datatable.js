@@ -4,9 +4,10 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { ContextError } from 'error';
 import * as fmt from 'fmt';
 
-export class Table extends Element {
+export class DataTable extends Element {
 	static properties = {
 		data: {}, // either null, an error, 'loading' or an object with a result and order
+		sortable: {type: Boolean},
 	};
 
 	click(e) {
@@ -69,19 +70,23 @@ export class Table extends Element {
 				sortColumn = sortColumn.substr(1);
 			}
 		}
+
+		const sortable = this.sortable;
 		for (let i = 0; i < cols.length; i += 1) {
 			const column = cols[i];
-			str += '<th';
 			if (column == sortColumn) {
-				str += ' class=' + dir;
+				str += `<th class="sortable ${dir}">${cols[i]}`;
+			} else if (sortable) {
+				str += `<th class=sortable>${cols[i]}`;
+			} else {
+				str += `<th>${cols[i]}`;
 			}
-			str += '>' + cols[i];
 		}
 
 		str += '</thead><tbody>';
 
 		if (rows.length === 0) {
-			str += `<tr><td style="padding: 20px" colspan=${cols.length}>No results found</tbody></table>`;
+			str += `<tr class=empty><td style="padding: 20px" colspan=${cols.length}>No results found</tbody></table>`;
 			return str;
 		}
 
@@ -134,9 +139,12 @@ td, th {
 	white-space: nowrap;
 }
 
+th.sortable {
+	cursor: pointer;
+}
+
 th {
 	top: 0px;
-	cursor: pointer;
 	position: sticky;
 	text-align: left;
 	font-weight: normal;
@@ -167,7 +175,7 @@ th.desc:after {
 tbody tr:nth-child(odd) {
 	background: #f6f6f6;
 }
-tbody tr:hover td {
+tbody tr:not(.empty):hover td {
 	cursor: pointer;
 	color: ${unsafeCSS(this.css.hov.fg)};
 	background: ${unsafeCSS(this.css.hov.bg)};
@@ -176,4 +184,4 @@ tbody tr:hover td {
 	];
 }
 
-customElements.define('event-table', Table);
+customElements.define('logdk-datatable', DataTable);

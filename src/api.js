@@ -9,6 +9,10 @@ export class Api {
 	async getEvents(dataset, args, opts) {
 		return request(`/api/1/datasets/${dataset}/events?${encodeMap(args)}`, opts);
 	}
+
+	async exec(sql, opts) {
+		return request(`/api/1/exec?sql=${encodeURIComponent(sql)}`, opts);
+	}
 };
 
 function request(url, opts) {
