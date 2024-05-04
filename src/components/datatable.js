@@ -33,7 +33,7 @@ export class DataTable extends Element {
 		}
 
 		if (data instanceof Error) {
-			return html`<logdk-error message="Error getting rows" .err=${data} .absolute=${false}></logdk-error>`
+			return html`<logdk-error message="Error getting rows" .err=${data}></logdk-error>`
 		}
 
 		if (this.data === 'loading') {

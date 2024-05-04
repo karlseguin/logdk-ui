@@ -6,7 +6,6 @@ class Error extends Element {
 	static properties = {
 		err: {},
 		message: {},
-		absolute: {type: Boolean},
 		_showDetails: {state: true},
 	};
 
@@ -20,10 +19,10 @@ class Error extends Element {
 		const err = this.err;
 		const data = err instanceof ContextError ? err.ctx : {name: err.name, message: err.message, type: typeof(err), file: err.fileName, line: err.lineNumber, stack: err.stack};
 		const keys = Object.keys(data).sort();
-		return html`${keys.map((k) => {
+		return html`<table>${keys.map((k) => {
 			const value = data[k];
-			return html`<div><label>${k}</label><span>${typeof value === 'object' ? JSON.stringify(value) : value}</span></div>\n`
-		})}`;
+			return html`<tr><td>${k}<td>${typeof value === 'object' ? JSON.stringify(value) : value}`
+		})}</table>`;
 	}
 
 	toggleDetails(e) {
@@ -33,7 +32,8 @@ class Error extends Element {
 	}
 
 	render() {
-		const styles = this.absolute ? {position: 'absolute', top: '50px'} : {};
+		// const styles = this.absolute ? {position: 'absolute', top: '50px'} : {};
+		const styles ={};
 		return html`
 			<div style=${styleMap(styles)}>
 				<p>${this.message}. Please try again.</p>
@@ -48,34 +48,44 @@ class Error extends Element {
 		css`
 :host > div {
 	background: #fee;
-	width: 600px;
-	margin: 0 auto;
+	width: calc(100% - 20px);
+	margin: 10px 10px;
 	padding: 5px 20px;
 	border-radius: 4px;
 	border: 1px solid #fcc;
-	left: calc(50% - 300px);
 }
 a {
 	color: #f00;
 	text-decoration: underline;
 }
 p {
-	padding:  0 10px;
+	padding: 0 10px;
 	text-align: center;
 }
-.fields > div {
-	gap: 10px;
-	padding: 5px 0;
-	display: flex;
-	font-family: monospace;
-}
-label {
-	font-weight: bold;
-	width: 75px;
-}
-span {
+
+table {
 	width: 100%;
-	word-break: break-all;
+	margin-top: 10px;
+	border-spacing: 0;
+	white-space: nowrap;
+	border-collapse: collapse;
+}
+td {
+	padding: 4px 10px;
+	vertical-align: top;
+	border-bottom: 1px solid #fff;
+}
+
+tr td:first-of-type {
+	font-weight: bold;
+}
+
+tr:last-of-type td {
+	border: none;
+}
+
+td {
+	white-space: wrap;
 }
 `
 	];
