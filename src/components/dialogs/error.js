@@ -1,4 +1,5 @@
 import { ContextError } from 'error';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { Element, html, css } from 'components/base';
 
@@ -18,11 +19,18 @@ class Error extends Element {
 	details() {
 		const err = this.err;
 		const data = err instanceof ContextError ? err.ctx : {name: err.name, message: err.message, type: typeof(err), file: err.fileName, line: err.lineNumber, stack: err.stack};
+		const message = data.message;
+		delete data.message;
+
 		const keys = Object.keys(data).sort();
-		return html`<table>${keys.map((k) => {
-			const value = data[k];
-			return html`<tr><td>${k}<td>${typeof value === 'object' ? JSON.stringify(value) : value}`
-		})}</table>`;
+		return html`<table>
+			<tr><td>message<td><pre>${message}</pre></tr>
+			${keys.map((k) => {
+				const value = data[k];
+				const str = typeof value == 'object' ? JSON.stringify(value, undefined, 2) : value;
+				return html`<tr><td>${k}<td><pre>${str}</pre>`;
+			})}
+			</table>`;
 	}
 
 	toggleDetails(e) {
@@ -62,7 +70,10 @@ p {
 	padding: 0 10px;
 	text-align: center;
 }
-
+pre {
+	font-size: 16px;
+	white-space: pre-wrap
+}
 table {
 	width: 100%;
 	margin-top: 10px;

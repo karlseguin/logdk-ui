@@ -33,7 +33,9 @@ export class Pager extends Element {
 		if (!total) return;
 
 		const pages = Math.ceil(total / this.paging.limit);
-		if (pages == 1) return;
+		if (pages == 1) {
+			return html`<div><div class=total>total: ${total}</div></div>`;
+		}
 
 		const page = this.paging.page;
 		let first = page - 4;

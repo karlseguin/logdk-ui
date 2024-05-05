@@ -13,7 +13,7 @@ export class Input extends Element {
 	}
 
 	run() {
-		const sql = this.selector('textarea').value;
+		const sql = this.selector('.sql').textContent;
 		if (sql) {
 			this.dispatchEvent(new CustomEvent('sql', {detail: sql}));
 		}
@@ -21,7 +21,7 @@ export class Input extends Element {
 
 	render() {
 		return html`<div>
-			<textarea @keydown=${this.keydown}>${this.sql}</textarea>
+			<div class=sql @keydown=${this.keydown} contenteditable=true>${this.sql}</div>
 			<input @click=${this.run} type=button value=run>
 		</div>
 		`;
@@ -31,17 +31,19 @@ export class Input extends Element {
 		this.css.reset,
 		this.css.form,
 		css`
-div {
+:host > div {
 	width: 100%;
 	margin: 10px 0;
 	display: flex;
 	flex-direction: column;
 }
-textarea {
-	width: 100%;
-	height: 200px;
-	padding: 5px;
+.sql {
+	min-height: 100px;
+	font-family: monospace;
+	padding: 10px;
 	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 input{
 	margin-top: 5px;

@@ -28,9 +28,9 @@ function request(url, opts) {
 		// a detailed error should parsing fail.
 		return r.text();
 	}).then((b) => {
-		body = b;
+		body = isJson ? JSON.parse(b) : b;
 		if (status !== 201 && status !== 200) {
-			throw new Error('invalid status');
+			throw new Error(isJson && body.error ? body.error : 'invalid status');
 		}
 		return {status: status, body: isJson ? JSON.parse(b) : b};
 	}).catch((err) => {
