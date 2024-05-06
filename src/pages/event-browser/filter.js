@@ -74,7 +74,7 @@ export class Filter extends Element {
 
 		const index = this.data.cols.indexOf(col);
 		const type = this.data.types[index];
-		return html`<div class=field data-op=${i}>${col} ${nameToOp(f[1])} ${fmt.value(fmt.typed(f[2], type))}</div>`
+		return html`<div class=field data-op=${i}>${col} ${nameToOp(f[1])} ${fmt.value(fmt.typed(f[2], type)) ?? 'null'}</div>`
 	}
 
 	static styles = [
