@@ -40,7 +40,7 @@ export class DataTable extends Element {
 			return html`<logdk-loading>Loading events</logdk-loading>`;
 		}
 
-		return html`<div class=wrap @click=${this.click}>${unsafeHTML(this.renderTable(data))}</div>`;
+		return html`<div @click=${this.click}>${unsafeHTML(this.renderTable(data))}</div>`;
 	}
 
 	updated() {
@@ -58,7 +58,15 @@ export class DataTable extends Element {
 		const cols = result.cols;
 		const rows = result.rows;
 		const types = result.types;
-		let str = '<table><thead><tr>';
+
+		// By default, we hide columns that have all null values (in the given page)
+		// This _might_ hide some data, but given that we're generally expecting
+		// wide table, I think it makes sense.
+		const displayIndex = this.displayable(cols.length, rows);
+		const allNullCount = cols.length - displayIndex.length;
+		console.log(cols)
+
+		let str = '<div class=wrap><table><thead><tr>';
 
 		let dir = 'asc';
 		let sortColumn = data.order;
@@ -72,14 +80,15 @@ export class DataTable extends Element {
 		}
 
 		const sortable = this.sortable;
-		for (let i = 0; i < cols.length; i += 1) {
-			const column = cols[i];
+		for (let i = 0; i < displayIndex.length; i += 1) {
+			const idx = displayIndex[i];
+			const column = cols[idx];
 			if (column == sortColumn) {
-				str += `<th class="sortable ${dir}">${cols[i]}`;
+				str += `<th class="sortable ${dir}">${cols[idx]}`;
 			} else if (sortable) {
-				str += `<th class=sortable>${cols[i]}`;
+				str += `<th class=sortable>${cols[idx]}`;
 			} else {
-				str += `<th>${cols[i]}`;
+				str += `<th>${cols[idx]}`;
 			}
 		}
 
@@ -93,14 +102,39 @@ export class DataTable extends Element {
 		for (let i = 0; i < rows.length; i += 1) {
 			str += `<tr data-index=${i}>`;
 			const row = rows[i];
-			for (let j = 0; j < row.length; j += 1) {
-				const type = types[j];
-				const value = fmt.typed(row[j], type);
-				str += '<td>' + (fmt.value(value) ?? '﹘');
+			for (let j = 0; j < displayIndex.length; j += 1) {
+				const idx = displayIndex[j];
+				const type = types[idx];
+				const value = fmt.typed(row[idx], type);
+				str += '<td>' + (fmt.value(value, true) ?? '﹘');
 			}
 		}
 
-		return str + '</tbody></table>';
+			str += '</tbody></table></div>';
+			return str;
+	}
+
+	displayable(colsCount, rows) {
+		const all = Array.from({length: colsCount}, (_, i) => i);
+		let nulls = [...all];
+		for (let i = 0; i < rows.length; ++i) {
+			const row = rows[i];
+			for (let j = 0; j < nulls.length;) {
+				if (row[nulls[j]] === null) {
+					++j;
+					continue;
+				}
+
+				if (nulls.length === 1) {
+					// This was our last column with a non-null value, therefor all columns
+					// have at least 1 non-null value and we should show them all.
+					return all;
+				}
+				if (j === nulls.length - 1)  nulls.pop();
+				else nulls[j] = nulls.pop();
+			}
+		}
+		return all.filter((i) => !nulls.includes(i));
 	}
 
 	formaTimestamp(dt) {

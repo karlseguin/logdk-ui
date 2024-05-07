@@ -11,9 +11,16 @@ function dateTime(dt, long) {
 	return date + ' ' + time;
 }
 
-function value(value) {
+function escapeHtml(html) {
+	return html.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function value(value, escape) {
 	if (value instanceof Date) {
 		return dateTime(value);
+	}
+	if (escape && typeof(value) == 'string') {
+		return escapeHtml(value);
 	}
 	return value;
 }
