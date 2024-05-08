@@ -263,7 +263,6 @@ div.browser {
 .data {
 	gap: 5px;
 	display: flex;
-	flex: 0 1 400px;
 }
 @media (max-width: 800px) {
 	.data {

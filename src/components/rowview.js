@@ -85,8 +85,13 @@ export class RowView extends Element {
 	}
 
 	updated() {
+		// I don't like this. I don't like that the 800 is hard-coded and has to
+		// match our css media query. And I don't even like the scrolling. But
+		// on mobile, the details are often out of view from the table, so you
+		// can't even tell if clicking did anything. On wider screen, always scrolling
+		// causes the screen to needless jump around. So here we are.
+		if (document.documentElement.clientWidth > 800) return;
 		const toolbar = this.selector('.toolbar');
-
 		if (toolbar) toolbar.scrollIntoView();
 	}
 

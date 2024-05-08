@@ -99,11 +99,11 @@ export class SQLBrowser extends Element {
 
 	render() {
 		return html`<div class=browser>
+			<sql-input @sql=${this.sqlChange}></sql-input>
 			<div class=data>
-				<sql-input @sql=${this.sqlChange}></sql-input>
 				<logdk-datatable .sortable=${false} .fitlerNullCols=${true} @rowClick=${this.rowClick}></logdk-datatable>
+				<logdk-rowview @close=${this.detailClose} .filterable=${false}></logdk-rowview>
 			</div>
-			<logdk-rowview @close=${this.detailClose} filterable=${false}></logdk-rowview>
 		</div>`;
 	}
 
@@ -118,12 +118,16 @@ export class SQLBrowser extends Element {
 div.browser {
 	display: flex;
 	padding: 0 10px;
+	flex-direction: column;
 }
 .data {
-	display: flex;
-	flex-grow: 1;
-	flex-direction: column;
 	gap: 5px;
+	display: flex;
+}
+@media (max-width: 800px) {
+	.data {
+		flex-direction: column-reverse;
+	}
 }
 		`
 	];

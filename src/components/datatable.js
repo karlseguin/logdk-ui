@@ -150,6 +150,9 @@ export class DataTable extends Element {
 	static styles = [
 		this.css.reset,
 		css`
+:host {
+	width: 100%;
+}
 .wrap {
 	display: grid;
 	max-height: calc(100vh - 200px);

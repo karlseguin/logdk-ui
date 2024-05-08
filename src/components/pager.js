@@ -55,12 +55,12 @@ export class Pager extends Element {
 		let skipToStart = null;
 		if (!smallPager) {
 			const cutoff = 6;
-			if (page == cutoff) skipToStart = html`<a data-page=1>1</a>`;
-			if (page > cutoff) skipToStart = html`<a data-page=1>1</a><span>..</span>`;
+			if (page == cutoff || first == 2) skipToStart = html`<a data-page=1>1</a>`;
+			else if (page > cutoff) skipToStart = html`<a data-page=1>1</a><span>..</span>`;
 		}
 
 		let skipToEnd = '';
-		if (!smallPager) {
+		if (!smallPager && last < pages) {
 			const cutoff = pages - 5;
 			if (page == cutoff) skipToEnd = html`<a data-page=${pages}>${pages}</a>`;
 			else if (page < cutoff) skipToEnd = html`<span>..</span><a data-page=${pages}>${pages}</a>`;
