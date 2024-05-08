@@ -8,6 +8,7 @@ export class DataTable extends Element {
 	static properties = {
 		data: {}, // either null, an error, 'loading' or an object with a result and order
 		sortable: {type: Boolean},
+		fitlerNullCols: {type: Boolean},
 	};
 
 	click(e) {
@@ -64,7 +65,6 @@ export class DataTable extends Element {
 		// wide table, I think it makes sense.
 		const displayIndex = this.displayable(cols.length, rows);
 		const allNullCount = cols.length - displayIndex.length;
-		console.log(cols)
 
 		let str = '<div class=wrap><table><thead><tr>';
 
@@ -116,6 +116,8 @@ export class DataTable extends Element {
 
 	displayable(colsCount, rows) {
 		const all = Array.from({length: colsCount}, (_, i) => i);
+		if (this.fitlerNullCols === false) return all;
+
 		let nulls = [...all];
 		for (let i = 0; i < rows.length; ++i) {
 			const row = rows[i];

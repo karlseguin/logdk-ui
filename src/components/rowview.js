@@ -78,10 +78,16 @@ export class RowView extends Element {
 			<ul class=toolbar>
 				${ this.filterable ? html`<a class=${filtersClass} @click=${this.toggleFilters}>filters</a>` : ''}
 				<a class=${nullClass} @click=${this.toggleNull}>${nulls} null${ nulls == 1 ? '' : 's'}</a>
-				<a class=close @click=${this.close}>x</a>
+				<a class=close @click=${this.close}>✕</a>
 			</ul>
 			${fields}
 		</div>`
+	}
+
+	updated() {
+		const toolbar = this.selector('.toolbar');
+
+		if (toolbar) toolbar.scrollIntoView();
 	}
 
 	static styles = [
@@ -89,18 +95,17 @@ export class RowView extends Element {
 		css`
 .details{
 	background: #fff;
-	width: 400px;
 	border-radius: 4px;
 	border: 1px solid #ccc;
-	position: relative;
+	min-width: 350px;
 	box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.3);
 }
 
 .toolbar {
-	width: 100%;
 	display: flex;
+	min-width: 350px;
 	user-select: none;
-	padding: 2px 10px;
+	padding: 5px 10px;
 	background: #f0f0f0;
 	align-items: baseline;
 	justify-content: flex-end;
@@ -108,7 +113,7 @@ export class RowView extends Element {
 }
 
 .toolbar a {
-	font-size: 80%;
+	font-size: 90%;
 	padding: 0 8px;
 	cursor: pointer;
 	margin-left: 10px;

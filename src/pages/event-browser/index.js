@@ -229,7 +229,7 @@ export class EventBrowser extends Element {
 					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
 					<div class=data>
 						<div class=table>
-							<logdk-datatable .sortable=${true} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
+							<logdk-datatable .sortable=${true} .fitlerNullCols=${false} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
 							<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
 						</div>
 						<logdk-rowview @close=${this.detailClose} @filterClick=${this.filterClick} .filterable=${true}></logdk-rowview>
@@ -261,7 +261,14 @@ div.browser {
 	flex-direction: column;
 }
 .data {
+	gap: 5px;
 	display: flex;
+	flex: 0 1 400px;
+}
+@media (max-width: 800px) {
+	.data {
+		flex-direction: column-reverse;
+	}
 }
 		`,
 	];

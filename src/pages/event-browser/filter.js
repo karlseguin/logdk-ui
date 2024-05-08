@@ -57,7 +57,7 @@ export class Filter extends Element {
 			return acc;
 		}, {});
 
-		return html`
+		return html`<div>
 			<div class=dynamic @click=${this.filterRemove}>
 				${this.data ? filters.map((f, i) => this.renderFilter(f, i)) : ''}
 			</div>
@@ -65,7 +65,7 @@ export class Filter extends Element {
 				<logdk-select @change=${this.datasetChange} .options=${this._dataset_lookup} .selected=${this.dataset}></logdk-select>
 				<logdk-daterange @change=${this.dateChange} .ts=${ts}></logdk-daterange>
 			</div>
-		`;
+		</div>`;
 	}
 
 	renderFilter(f, i) {
@@ -80,8 +80,9 @@ export class Filter extends Element {
 	static styles = [
 		this.css.reset,
 		css`
-:host {
+:host > div {
 	display: flex;
+	align-items: flex-start;
 }
 .dynamic, .static {
 	gap: 5px;
@@ -114,6 +115,12 @@ export class Filter extends Element {
 	border-color: ${unsafeCSS(this.css.hi.bd)};
 	background: ${unsafeCSS(this.css.hi.bg)};
 	text-decoration: line-through;
+}
+@media (max-width: 800px) {
+	:host > div {
+		flex-direction: column-reverse;
+	}
+	.static {margin: 5px 5px 0;}
 }
 		`
 	];

@@ -4,6 +4,7 @@ const proxy = require('koa-proxies');
 module.exports = {
 	debug: false,
 	port: 8000,
+	hostname: '127.0.0.1',
 	watch: true,
 	plugins: [],
 	nodeResolve: true,

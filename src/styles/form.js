@@ -1,6 +1,9 @@
 import { css } from 'lit-element';
 
 export default css`
+select {
+	height: 100%;
+}
 input, select, textarea {
 	border: 1px solid #bbb;
 	border-radius: 4px;

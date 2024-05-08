@@ -361,7 +361,7 @@ export class DateRange extends Element {
 }
 
 input[name="display"] {
-	width: 300px;
+	max-width: 300px;
 }
 
 .picker {

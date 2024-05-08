@@ -78,9 +78,6 @@ export class Pager extends Element {
 
 	static styles = [
 		css`
-:host > div {
-	display: flex;
-}
 .total {
 	align-self: flex-start;
 	font-size: 80%;
@@ -88,7 +85,7 @@ export class Pager extends Element {
 	border-radius: 5px;
 }
 .pager {
-	margin-top: 15px;
+	margin: 10px 0 20px;
 	margin-left: auto;
 	user-select: none;
 	text-align: center;
