@@ -64,14 +64,14 @@ export class DataTable extends Element {
 
 		const columnCount = result.cols.length;
 
-
 		// if configured to to so, we'll skip all-null columns
 		const displayIndexes = this.displayable(columnCount, result.rows);
 		const hiddenColumns = columnCount - displayIndexes.length;
 		const nullClass = this.hideableNulls && this.showNulls ? 'on' : 'off';
 
+		this._table = this.renderTable(result, data.order, displayIndexes);
 		return html`<div>
-			<div @click=${this.click}>${unsafeHTML(this.renderTable(result, data.order, displayIndexes))}</div>
+			<div @click=${this.click} class=wrap></div>
 			<div class=summary>
 				<div>total: ${total}</div>
 				${ this.hideableNulls ? html`<div><a @click=${this.toggleNulls} class=${nullClass}>null columns: ${columnCount}</a></div>` : ''}
@@ -80,13 +80,16 @@ export class DataTable extends Element {
 	}
 
 	updated() {
+		const wrap = this.selector('.wrap');
+		if (!wrap) return;
+
+		wrap.style.display = 'none';
+		wrap.innerHTML = this._table;
 		if (this._restoreScroll) {
-			const wrap = this.selector('.wrap');
-			if (wrap) {
-				wrap.scrollLeft = this._restoreScroll;
-				this._restoreScroll = 0;
-			}
+			wrap.scrollLeft = this._restoreScroll;
+			this._restoreScroll = 0;
 		}
+		wrap.style.display = 'block';
 	}
 
 	renderTable(result, order, displayIndexes) {
@@ -94,7 +97,7 @@ export class DataTable extends Element {
 		const rows = result.rows;
 		const types = result.types;
 
-		let str = '<div class=wrap><table><thead><tr>';
+		let str = '<table><thead><tr>';
 
 		let dir = 'asc';
 		let sortColumn = order;
@@ -138,7 +141,7 @@ export class DataTable extends Element {
 			}
 		}
 
-			str += '</tbody></table></div>';
+			str += '</tbody></table>';
 			return str;
 	}
 
@@ -238,7 +241,6 @@ th.desc:after {
 	content: '▼'
 }
 
-// table > tfoot th { background: aquamarine;position: sticky;bottom: 0px;}
 tbody tr:nth-child(odd) {
 	background: #f6f6f6;
 }

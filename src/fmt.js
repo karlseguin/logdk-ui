@@ -1,14 +1,7 @@
-const dateFormat = {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'};
-
-function dateTime(dt, long) {
-	const date = dt.toLocaleDateString(undefined, dateFormat);
-	// the first split gives us the time (with millisecond)
-	// the secod split strips out the millisecond (and UTC timezone indicator)
-	let time = dt.toISOString().split('T')[1];
-	if (long !== true) {
-		time = time.split('.')[0];
-	}
-	return date + ' ' + time;
+const intlDate = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
+const intlTime = new Intl.DateTimeFormat(undefined, {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false});
+function dateTime(dt) {
+	return intlDate.format(dt) + ' ' + intlTime.format(dt);
 }
 
 function escapeHtml(html) {
