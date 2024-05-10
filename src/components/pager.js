@@ -10,7 +10,7 @@ export class Pager extends Element {
 
 	constructor() {
 		super();
-		this._last_total = null;
+		this._lastTotal = null;
 	}
 
 	click(e) {
@@ -25,9 +25,9 @@ export class Pager extends Element {
 
 		let total = this.paging.total;
 		if (total == undefined || total == null) {
-			total = this._last_total
+			total = this._lastTotal
 		} else {
-			this._last_total = total;
+			this._lastTotal = total;
 		}
 
 		if (!total) return;
@@ -66,24 +66,15 @@ export class Pager extends Element {
 			else if (page < cutoff) skipToEnd = html`<span>..</span><a data-page=${pages}>${pages}</a>`;
 		}
 
-		return html `<div>
-			<div class=total>total: ${total}</div>
-			<div class=pager @click=${this.click}>
-				<a data-page=${page - 1} class=${smallPager || page == 1 ? 'hidden' : ''}>⇦</a>${ skipToStart }${map(range(first, last+1), (i) => {
-					return i == page ? html`<a class=active>${i}</a>` : html`<a data-page=${i}>${i}</a>`
-				})}${ skipToEnd }<a data-page=${page + 1} class=${smallPager || page == pages ? 'hidden' : ''}>⇨</a>
-			</div>
+		return html `<div class=pager @click=${this.click}>
+			<a data-page=${page - 1} class=${smallPager || page == 1 ? 'hidden' : ''}>⇦</a>${ skipToStart }${map(range(first, last+1), (i) => {
+				return i == page ? html`<a class=active>${i}</a>` : html`<a data-page=${i}>${i}</a>`
+			})}${ skipToEnd }<a data-page=${page + 1} class=${smallPager || page == pages ? 'hidden' : ''}>⇨</a>
 		</div>`;
 	}
 
 	static styles = [
 		css`
-.total {
-	align-self: flex-start;
-	font-size: 80%;
-	padding: 2px 5px;
-	border-radius: 5px;
-}
 .pager {
 	margin: 10px 0 20px;
 	margin-left: auto;

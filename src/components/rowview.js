@@ -5,14 +5,14 @@ import * as filters from 'filters';
 export class RowView extends Element {
 	static properties = {
 		row: {type: Object},
-		showNull: {state: true},
+		showNulls: {state: true},
 		showFilters: {state: true},
 		filterable: {type: Object},
 	};
 
 	constructor() {
 		super();
-		this.showNull = false;
+		this.showNulls = false;
 		this.showFilters = true;
 	}
 
@@ -32,7 +32,7 @@ export class RowView extends Element {
 
 	keydown(e) { if (e.key === 'F') if (this.row) this.showFilters = !this.showFilters; }
 	toggleFilters() { this.showFilters = !this.showFilters; }
-	toggleNull() { this.showNull = !this.showNull; }
+	toggleNulls() { this.showNulls = !this.showNulls; }
 	close() { this.dispatchEvent(new CustomEvent('close', null)); }
 
 	filterClick(e) {
@@ -53,13 +53,13 @@ export class RowView extends Element {
 		let nulls = 0;
 		const cols = row.cols;
 		const types = row.types;
-		const showNull = this.showNull;
+		const showNulls = this.showNulls;
 		const showFilters = this.filterable && this.showFilters;
 
 		const fields = row.data.map((value, i) => {
 			if (value == null) {
 				nulls += 1;
-				if (!showNull) return html``;
+				if (!showNulls) return html``;
 			}
 			const type = types[i]
 			return html`<div class=field>
@@ -72,12 +72,12 @@ export class RowView extends Element {
 			</div>`;
 		});
 
-		const nullClass = showNull ? 'on' : 'off';
+		const nullClass = showNulls ? 'on' : 'off';
 		const filtersClass = showFilters ? 'on' : 'off'
 		return html`<div class=details>
 			<ul class=toolbar>
 				${ this.filterable ? html`<a class=${filtersClass} @click=${this.toggleFilters}>filters</a>` : ''}
-				<a class=${nullClass} @click=${this.toggleNull}>${nulls} null${ nulls == 1 ? '' : 's'}</a>
+				<a class=${nullClass} @click=${this.toggleNulls}>${nulls} null${ nulls == 1 ? '' : 's'}</a>
 				<a class=close @click=${this.close}>✕</a>
 			</ul>
 			${fields}
@@ -127,6 +127,7 @@ export class RowView extends Element {
 .toolbar .close {
 	font-size: 100%;
 }
+
 .toolbar a:hover {
 	color: ${unsafeCSS(this.css.hi.fg)};
 	border-color: ${unsafeCSS(this.css.hi.bd)};

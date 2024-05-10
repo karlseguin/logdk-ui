@@ -8,8 +8,17 @@ export class DataTable extends Element {
 	static properties = {
 		data: {}, // either null, an error, 'loading' or an object with a result and order
 		sortable: {type: Boolean},
-		fitlerNullCols: {type: Boolean},
+		showNulls: {state: true},
+		hideableNulls: {type: Boolean},
+		inferTotal: {type: Boolean},
 	};
+
+	constructor() {
+		super();
+		this._lastTotal = null;
+	}
+
+	toggleNulls() { this.showNulls = !this.showNulls; }
 
 	click(e) {
 		const target = e.target;
@@ -41,7 +50,33 @@ export class DataTable extends Element {
 			return html`<logdk-loading>Loading events</logdk-loading>`;
 		}
 
-		return html`<div @click=${this.click}>${unsafeHTML(this.renderTable(data))}</div>`;
+		const result = data.result;
+
+
+		let total = result.total;
+		if (this.inferTotal) {
+			total = result.rows.length;
+		} else if (total == undefined || total == null) {
+			total = this._lastTotal
+		} else {
+			this._lastTotal = total;
+		}
+
+		const columnCount = result.cols.length;
+
+
+		// if configured to to so, we'll skip all-null columns
+		const displayIndexes = this.displayable(columnCount, result.rows);
+		const hiddenColumns = columnCount - displayIndexes.length;
+		const nullClass = this.hideableNulls && this.showNulls ? 'on' : 'off';
+
+		return html`<div>
+			<div @click=${this.click}>${unsafeHTML(this.renderTable(result, data.order, displayIndexes))}</div>
+			<div class=summary>
+				<div>total: ${total}</div>
+				${ this.hideableNulls ? html`<div><a @click=${this.toggleNulls} class=${nullClass}>null columns: ${columnCount}</a></div>` : ''}
+			</div>
+		</div>`;
 	}
 
 	updated() {
@@ -54,22 +89,15 @@ export class DataTable extends Element {
 		}
 	}
 
-	renderTable(data) {
-		const result = data.result;
+	renderTable(result, order, displayIndexes) {
 		const cols = result.cols;
 		const rows = result.rows;
 		const types = result.types;
 
-		// By default, we hide columns that have all null values (in the given page)
-		// This _might_ hide some data, but given that we're generally expecting
-		// wide table, I think it makes sense.
-		const displayIndex = this.displayable(cols.length, rows);
-		const allNullCount = cols.length - displayIndex.length;
-
 		let str = '<div class=wrap><table><thead><tr>';
 
 		let dir = 'asc';
-		let sortColumn = data.order;
+		let sortColumn = order;
 		if (sortColumn && sortColumn.length > 1) {
 			if (sortColumn[0] === '-') {
 				sortColumn = sortColumn.substr(1);
@@ -80,8 +108,8 @@ export class DataTable extends Element {
 		}
 
 		const sortable = this.sortable;
-		for (let i = 0; i < displayIndex.length; i += 1) {
-			const idx = displayIndex[i];
+		for (let i = 0; i < displayIndexes.length; i += 1) {
+			const idx = displayIndexes[i];
 			const column = cols[idx];
 			if (column == sortColumn) {
 				str += `<th class="sortable ${dir}">${cols[idx]}`;
@@ -102,8 +130,8 @@ export class DataTable extends Element {
 		for (let i = 0; i < rows.length; i += 1) {
 			str += `<tr data-index=${i}>`;
 			const row = rows[i];
-			for (let j = 0; j < displayIndex.length; j += 1) {
-				const idx = displayIndex[j];
+			for (let j = 0; j < displayIndexes.length; j += 1) {
+				const idx = displayIndexes[j];
 				const type = types[idx];
 				const value = fmt.typed(row[idx], type);
 				str += '<td>' + (fmt.value(value, true) ?? '﹘');
@@ -116,7 +144,7 @@ export class DataTable extends Element {
 
 	displayable(colsCount, rows) {
 		const all = Array.from({length: colsCount}, (_, i) => i);
-		if (this.fitlerNullCols === false) return all;
+		if (this.hideableNulls === false || this.showNulls === true) return all;
 
 		let nulls = [...all];
 		for (let i = 0; i < rows.length; ++i) {
@@ -219,8 +247,44 @@ tbody tr:not(.empty):hover td {
 	color: ${unsafeCSS(this.css.hov.fg)};
 	background: ${unsafeCSS(this.css.hov.bg)};
 }
+
+.summary {
+	gap: 20px;
+	display : flex;
+	font-size: 80%;
+	margin-top: 5px;
+}
+
+.summary a {
+	padding: 5px;
+	cursor: pointer;
+	margin-left: 10px;
+	border-radius: 4px;
+}
+
+.summary a:hover {
+	color: ${unsafeCSS(this.css.hi.fg)};
+	border-color: ${unsafeCSS(this.css.hi.bd)};
+	background: ${unsafeCSS(this.css.hi.bg)};
+}
+
+.summary .off {
+	text-decoration: line-through;
+	border: 1px solid transparent;
+	color: ${unsafeCSS(this.css.off.fg)};
+	background: ${unsafeCSS(this.css.off.bg)};
+}
+
+.summary .on {
+	color: ${unsafeCSS(this.css.sel.fg)};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
+}
 		`
 	];
 }
 
 customElements.define('logdk-datatable', DataTable);
+
+
+

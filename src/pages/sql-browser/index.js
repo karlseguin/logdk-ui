@@ -101,7 +101,7 @@ export class SQLBrowser extends Element {
 		return html`<div class=browser>
 			<sql-input @sql=${this.sqlChange}></sql-input>
 			<div class=data>
-				<logdk-datatable .sortable=${false} .fitlerNullCols=${true} @rowClick=${this.rowClick}></logdk-datatable>
+				<logdk-datatable .sortable=${false} .hideableNulls=${false} .inferTotal=${true} @rowClick=${this.rowClick}></logdk-datatable>
 				<logdk-rowview @close=${this.detailClose} .filterable=${false}></logdk-rowview>
 			</div>
 		</div>`;
