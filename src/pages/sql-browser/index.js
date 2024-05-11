@@ -2,6 +2,7 @@ import { Element, html, css } from 'components/base';
 
 import './input.js';
 import * as url from 'url';
+import 'components/pager.js';
 import 'components/rowview.js';
 import 'components/datatable.js';
 
@@ -19,14 +20,21 @@ export class SQLBrowser extends Element {
 		// can't select this until we've loaded the data
 		this._selectOnData = args.selected ?? null;
 
+		const page = parseInt(args.page)
+		this._page = isNaN(page) ? 1 : page;
+
+		const limit = parseInt(args.limit)
+		this._limit = isNaN(limit) ? 100 : limit;
+
 		this._sql = args.sql;
 		if (this._sql) {
-			this.run(this._sql);
+			this.run(this._sql, true);
 		} else {
 			this.tableElement.data = null;
 		}
 	}
 
+	get pagerElement() { return this.selector('logdk-pager'); }
 	get inputElement() { return this.selector('sql-input'); }
 	get detailElement() { return this.selector('logdk-rowview'); }
 	get tableElement() { return this.selector('logdk-datatable'); }
@@ -39,11 +47,17 @@ export class SQLBrowser extends Element {
 
 	sqlChange(e) {
 		const sql = e.detail;
-		this.run(sql);
+		this.run(sql, true);
 		if (sql !== this._sql) {
 			this._sql = sql;
 			this.pushURL();
 		}
+	}
+
+	pageClick(e) {
+		this._page = e.detail;
+		this.run(this._sql, false);
+		this.pushURL();
 	}
 
 	rowClick(e) {
@@ -71,17 +85,28 @@ export class SQLBrowser extends Element {
 	pushURL() {
 		let opts = {};
 		if (this._sql) opts.sql = this._sql;
+		if (this._page) opts.page = this._page;
 		if (this._selected) opts.selected = this._selected;
 		url.pushFragment(url.encodeMap(opts));
 	}
 
-	async run(sql) {
+	async run(sql, total) {
 		this.tableElement.data = 'loading';
+		this.pagerElement.paging = null;
 		try {
-			const res = await this.api.exec(sql, {});
+			const page = this._page;
+			const limit = this._limit;
+
+			const res = await this.api.exec({sql: sql, total: total, page: page, limit: limit}, {});
 			const data = res.body;
 			this._data = data;
 			this.tableElement.data = {result: data};
+
+			this.pagerElement.paging = {
+				page: page,
+				limit: limit,
+				total: data.total,
+			};
 
 			if (this._selectOnData) {
 				this.detailElement.row = {
@@ -101,7 +126,10 @@ export class SQLBrowser extends Element {
 		return html`<div class=browser>
 			<sql-input @sql=${this.sqlChange}></sql-input>
 			<div class=data>
-				<logdk-datatable .sortable=${false} .hideableNulls=${false} .inferTotal=${true} @rowClick=${this.rowClick}></logdk-datatable>
+				<div class=table>
+					<logdk-datatable .sortable=${false} .hideableNulls=${false} @rowClick=${this.rowClick}></logdk-datatable>
+					<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
+				</div>
 				<logdk-rowview @close=${this.detailClose} .filterable=${false}></logdk-rowview>
 			</div>
 		</div>`;

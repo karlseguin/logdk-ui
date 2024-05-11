@@ -102,7 +102,7 @@ export class RowView extends Element {
 	background: #fff;
 	border-radius: 4px;
 	border: 1px solid #ccc;
-	min-width: 350px;
+	min-width: 400px;
 	box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.3);
 }
 

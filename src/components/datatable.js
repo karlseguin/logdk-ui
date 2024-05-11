@@ -10,11 +10,11 @@ export class DataTable extends Element {
 		sortable: {type: Boolean},
 		showNulls: {state: true},
 		hideableNulls: {type: Boolean},
-		inferTotal: {type: Boolean},
 	};
 
 	constructor() {
 		super();
+		this.showNulls = false;
 		this._lastTotal = null;
 	}
 
@@ -54,27 +54,32 @@ export class DataTable extends Element {
 
 
 		let total = result.total;
-		if (this.inferTotal) {
-			total = result.rows.length;
-		} else if (total == undefined || total == null) {
+		if (total == undefined || total == null) {
 			total = this._lastTotal
 		} else {
 			this._lastTotal = total;
 		}
 
 		const columnCount = result.cols.length;
+		const allColumnIndexes = Array.from({length: columnCount}, (_, i) => i);
+		let displayIndexes = allColumnIndexes;
 
-		// if configured to to so, we'll skip all-null columns
-		const displayIndexes = this.displayable(columnCount, result.rows);
-		const hiddenColumns = columnCount - displayIndexes.length;
-		const nullClass = this.hideableNulls && this.showNulls ? 'on' : 'off';
+		let nullColumnCount = 0;
+		if (this.hideableNulls === true) {
+			const nullColumnIndexes = this.nullColumnIndexes(columnCount, result.rows);
+			nullColumnCount = nullColumnIndexes.length;
+			if (this.showNulls === false) {
+				displayIndexes = allColumnIndexes.filter((i) => !nullColumnIndexes.includes(i));
+			}
+		}
 
+		const nullClass = this.showNulls ? 'on' : 'off';
 		this._table = this.renderTable(result, data.order, displayIndexes);
 		return html`<div>
 			<div @click=${this.click} class=wrap></div>
 			<div class=summary>
 				<div>total: ${total}</div>
-				${ this.hideableNulls ? html`<div><a @click=${this.toggleNulls} class=${nullClass}>null columns: ${columnCount}</a></div>` : ''}
+				${ this.hideableNulls && nullColumnCount > 0 ? html`<div><a @click=${this.toggleNulls} class=${nullClass}>null columns (${nullColumnCount})</a></div>` : ''}
 			</div>
 		</div>`;
 	}
@@ -89,7 +94,7 @@ export class DataTable extends Element {
 			wrap.scrollLeft = this._restoreScroll;
 			this._restoreScroll = 0;
 		}
-		wrap.style.display = 'block';
+		wrap.style.display = 'grid';
 	}
 
 	renderTable(result, order, displayIndexes) {
@@ -145,11 +150,8 @@ export class DataTable extends Element {
 			return str;
 	}
 
-	displayable(colsCount, rows) {
-		const all = Array.from({length: colsCount}, (_, i) => i);
-		if (this.hideableNulls === false || this.showNulls === true) return all;
-
-		let nulls = [...all];
+	nullColumnIndexes(columnCount, rows) {
+		let nulls = Array.from({length: columnCount}, (_, i) => i);;
 		for (let i = 0; i < rows.length; ++i) {
 			const row = rows[i];
 			for (let j = 0; j < nulls.length;) {
@@ -159,15 +161,14 @@ export class DataTable extends Element {
 				}
 
 				if (nulls.length === 1) {
-					// This was our last column with a non-null value, therefor all columns
-					// have at least 1 non-null value and we should show them all.
-					return all;
+					// This was our last column with a non-null value, we can stop now.
+					return [];
 				}
 				if (j === nulls.length - 1)  nulls.pop();
 				else nulls[j] = nulls.pop();
 			}
 		}
-		return all.filter((i) => !nulls.includes(i));
+		return nulls;
 	}
 
 	formaTimestamp(dt) {
@@ -262,6 +263,7 @@ tbody tr:not(.empty):hover td {
 	cursor: pointer;
 	margin-left: 10px;
 	border-radius: 4px;
+	user-select: none;
 }
 
 .summary a:hover {

@@ -8,14 +8,24 @@ function escapeHtml(html) {
 	return html.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
-function value(value, escape) {
-	if (value instanceof Date) {
-		return dateTime(value);
+function value(v, escape) {
+	if (v instanceof Date) {
+		return dateTime(v);
 	}
-	if (escape && typeof(value) == 'string') {
-		return escapeHtml(value);
+	if (escape && typeof(v) === 'string') {
+		return escapeHtml(v);
 	}
-	return value;
+	if (typeof(v) === 'object') {
+		if (Array.isArray(v)) {
+			if (v.length == 0) return '[]';
+			let str = '[' + value(v[0], escape);
+			for (let i = 1; i < v.length; i++) {
+				str += ',' + value(v[i], escape);
+			}
+			return str + ']';
+		}
+	}
+	return v;
 }
 
 function typed(value, type) {

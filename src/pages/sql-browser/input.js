@@ -20,34 +20,29 @@ export class Input extends Element {
 	}
 
 	render() {
-		return html`<div>
-			<div class=sql @keydown=${this.keydown} contenteditable=true>${this.sql}</div>
+		return html`<div class=sql @keydown=${this.keydown} contenteditable=true>
+			${this.sql}
 			<input @click=${this.run} type=button value=run>
-		</div>
-		`;
+		</div>`;
 	}
 
 	static styles = [
 		this.css.reset,
 		this.css.form,
 		css`
-:host > div {
-	width: 100%;
-	margin: 10px 0;
-	display: flex;
-	flex-direction: column;
-}
 .sql {
-	min-height: 100px;
 	font-family: monospace;
 	padding: 10px;
 	font-size: 16px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
+	margin: 10px 0;
+	position: relative;
 }
 input{
-	margin-top: 5px;
-	margin-left: auto;
+	position: absolute;
+	bottom: 4px;
+	right: 4px;
 }
 		`
 	];

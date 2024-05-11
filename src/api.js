@@ -10,8 +10,8 @@ export class Api {
 		return request(`/api/1/datasets/${dataset}/events?${encodeMap(args)}`, opts);
 	}
 
-	async exec(sql, opts) {
-		return request(`/api/1/exec?sql=${encodeURIComponent(sql)}`, opts);
+	async exec(args, opts) {
+		return request(`/api/1/exec?${encodeMap(args)}`, opts);
 	}
 };
 

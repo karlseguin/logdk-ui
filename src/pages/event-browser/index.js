@@ -90,6 +90,7 @@ export class EventBrowser extends Element {
 			types: data.types,
 			data: data.rows[index],
 		};
+		this.detailElement.showNulls = this.tableElement.showNulls;
 		this.pushURL();
 	}
 
@@ -256,8 +257,8 @@ div.browser {
 	flex-direction: column;
 }
 .table {
-	flex: 1;
 	display: flex;
+	flex: 1 1 auto;
 	flex-direction: column;
 }
 .data {
