@@ -12,8 +12,6 @@ p {
 	background: #ffe;
 	width: 100%;
 	margin: 0 auto;
-	//position: absolute;
-	//top: 41px;
 	padding: 5px 0;
 	border: 1px solid #f0f0f0;
 	text-align: center;

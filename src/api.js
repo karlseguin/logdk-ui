@@ -13,6 +13,10 @@ export class Api {
 	async exec(args, opts) {
 		return request(`/api/1/exec?${encodeMap(args)}`, opts);
 	}
+
+	async info(opts) {
+		return request(`/api/1/info`, opts);
+	}
 };
 
 function request(url, opts) {

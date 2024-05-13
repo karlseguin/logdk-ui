@@ -9,6 +9,8 @@ import { context } from 'context';
 import { Api } from  'api';
 import 'pages/sql-browser';
 import 'pages/event-browser';
+import 'pages/info';
+import 'pages/notfound';
 
 export class Logdk extends LitElement {
 	_context = new ContextProvider(this, context);
@@ -43,14 +45,13 @@ export class Logdk extends LitElement {
 
 		const pathname = target.pathname;
 		if (this.route(pathname, true)) {
-
 			e.preventDefault();
 			e.stopPropagation();
 		}
 	}
 
 	popstate() {
-		this.route(top.location.pathname);
+		this.route(top.location.pathname, false);
 	}
 
 	route(path, push) {
@@ -62,9 +63,17 @@ export class Logdk extends LitElement {
 		case '/sql':
 			component = 'sql-browser';
 			break;
+		case '/info':
+			component = 'logdk-info';
+			break;
 		}
 
-		if (component == null) return false;
+		if (component == null) {
+			if (push === false) {
+				this._component = 'logdk-notfound';
+			}
+			return false;
+		}
 		if (push) history.pushState(null, '', path);
 
 		if (this._component === component) {
@@ -83,6 +92,7 @@ export class Logdk extends LitElement {
 			<header><nav><ul>
 				<li><a class=${c === 'event-browser' ? 'on' : null} href="/" data-wc>home</a>
 				<li><a class=${c === 'sql-browser' ? 'on' : null} href="/sql" data-wc>sql</a>
+				<li style="margin-left:auto"><a class=${c === 'info' ? 'on' : null} href=/info data-wc>info</a>
 			</ul></nav></header>
 			<${tag}></${tag}>
 		`;
