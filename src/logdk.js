@@ -22,6 +22,7 @@ export class Logdk extends LitElement {
 	constructor() {
 		super();
 		const api = new Api();
+		this._title = document.title;
 		this._context.setValue({api: api});
 		this.route(top.location.pathname, false);
 	}
@@ -58,18 +59,22 @@ export class Logdk extends LitElement {
 		let component = null;
 		switch (path) {
 		case '': case '/':
+			this._title = 'logdk - events';
 			component = 'event-browser';
 			break;
 		case '/sql':
+			this._title = 'logdk - sql';
 			component = 'sql-browser';
 			break;
 		case '/info':
+			this._title = 'logdk - info';
 			component = 'logdk-info';
 			break;
 		}
 
 		if (component == null) {
 			if (push === false) {
+				this._title = 'logdk - not found';
 				this._component = 'logdk-notfound';
 			}
 			return false;
@@ -88,6 +93,7 @@ export class Logdk extends LitElement {
 	render() {
 		const c = this._component
 		const tag = literal`${unsafeStatic(c)}`
+		document.title = this._title;
 		return html`
 			<header><nav><ul>
 				<li><a class=${c === 'event-browser' ? 'on' : null} href="/" data-wc>home</a>
