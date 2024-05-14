@@ -31,7 +31,8 @@ export class DateRange extends Element {
 	constructor() {
 		super();
 		this._first = true;
-		this._current = null;
+		this._m1 = null;
+		this._m2 = null;
 		this._mode = MODE_DATE_PICKER;
 	}
 
@@ -88,29 +89,38 @@ export class DateRange extends Element {
 		e.stopPropagation();
 
 		if (this._mode === MODE_MONTH_PICKER) {
+			const m = this._mode_data;
 			if (op === 'ok') {
-				const year = parseInt(this.selector('input[name="year"]').value) || this._current.getUTCFullYear();
-				this._current.setUTCYear(year);
+				const year = parseInt(this.selector('input[name="year"]').value) || m.getUTCFullYear();
+				m.setUTCFullYear(year);
 				this._mode = MODE_DATE_PICKER;
 			} else {
-				this._current.setUTCMonth(parseInt(op));
+				m.setUTCMonth(parseInt(op));
 			}
 			this.update();
 			return;
 		}
 
 		switch (op) {
-		case 'prev':
-			this._current.setUTCMonth(this._current.getUTCMonth() - 1);
+		case 'prev-m1':
+			this._m1.setUTCMonth(this._m1.getUTCMonth() - 1);
 			break;
-		case 'next':
-			this._current.setUTCMonth(this._current.getUTCMonth() + 1);
+		case 'next-m1':
+			this._m1.setUTCMonth(this._m1.getUTCMonth() + 1);
+			break;
+		case 'prev-m2':
+			this._m2.setUTCMonth(this._m2.getUTCMonth() - 1);
+			break;
+		case 'next-m2':
+			this._m2.setUTCMonth(this._m2.getUTCMonth() + 1);
 			break;
 		case 'm1':
-			this._mode = MODE_DATE_PICKER;
+			this._mode = MODE_MONTH_PICKER;
+			this._mode_data = this._m1;
 			break;
 		case 'm2':
 			this._mode = MODE_MONTH_PICKER;
+			this._mode_data = this._m2;
 			break;
 		case 'clear':
 			this._first = false;
@@ -133,7 +143,7 @@ export class DateRange extends Element {
 				this.applyTime();
 				if (this.ts.le < this.ts.ge) {
 					const x = this.ts.le;
-					this.ts.le = this.get;
+					this.setLE(this.ts.ge);
 					this.setGE(x);
 				}
 				this._first = true;
@@ -151,7 +161,7 @@ export class DateRange extends Element {
 		if (!result) return;
 
 		const [ge, le] = result;
-		this.ts.le = le;
+		this.setLE(le);
 		this.setGE(ge);
 
 		this.ts.rel = op;
@@ -160,16 +170,22 @@ export class DateRange extends Element {
 
 	setGE(date) {
 		this.ts.ge = date;
-		this._current = new Date(date.getTime()); // don't set to this.ge as we mutate _current
+		this._m1 = new Date(date.getTime()); // don't set to this.ge as we mutate _current
+	}
+	setLE(date) {
+		this.ts.le = date;
+		this._m2 = new Date(date.getTime()); // don't set to this.le as we mutate _current
 	}
 
 	render() {
-		this._current = this._current ?? this.ts?.ge;
-		if (!this._current) {
+		this._m1 = this._m1 ?? this.ts?.ge;
+		if (!this._m1) {
 			if (!this.ts) this.ts = {};
-			this._current = new Date();
-			this._current.setUTCHours(0);
-			this._current.setUTCMinutes(0);
+			this._m1 = new Date();
+			this._m1.setUTCHours(0);
+		}
+		if (this._m2 === null) {
+			this._m2 = new Date(this._m1.getUTCFullYear(), this._m1.getUTCMonth() + 1, 1, 23, 59);
 		}
 
 		return html`<div class=wrap>
@@ -209,46 +225,50 @@ export class DateRange extends Element {
 	}
 
 	renderDatePicker() {
-		const current = this._current;
-		const next = new Date(current.getUTCFullYear(), current.getUTCMonth() + 1, 1, 23, 59);
+		const m1 = this._m1;
+		const m2 = this._m2;
 
 		return html`<div class=picker @click=${this.click}>
 			<div class=datePicker>
 				<div class=header>
-					<span data-op=prev>«</span>
-					<div><span data-op=m2>${MONTHS[current.getUTCMonth()]} ${current.getUTCFullYear()}</span></div>
+					<span data-op=prev-m1>«</span>
+					<div><span data-op=m1>${MONTHS[m1.getUTCMonth()]} ${m1.getUTCFullYear()}</span></div>
+					<span data-op=next-m1>»</span>
 				</div>
-				${unsafeHTML(this.buildMonth(current))}
+				${unsafeHTML(this.buildMonth(m1))}
 				<div class=time><label>Start time</label> <input type=time name=start_time value="${this.formatTime(this.ts.ge, '00:00')}"></div>
+				<div class="time nowide"><label>End time</label> <input type=time name=end_time value="${this.formatTime(this.ts.le, '23:59')}"></div>
 			</div>
-			<div class=datePicker>
+			<div class="datePicker month2">
 				<div class=header>
-					<div><span data-op=m2>${MONTHS[next.getUTCMonth()]} ${next.getUTCFullYear()}</span></div>
-					<span data-op=next>»</span>
+					<span data-op=prev-m2>«</span>
+					<div><span data-op=m2>${MONTHS[m2.getUTCMonth()]} ${m2.getUTCFullYear()}</span></div>
+					<span data-op=next-m2>»</span>
 				</div>
-				${unsafeHTML(this.buildMonth(next))}
+				${unsafeHTML(this.buildMonth(m2))}
 				<div class=time><label>End time</label> <input type=time name=end_time value="${this.formatTime(this.ts.le, '23:59')}"></div>
 			</div>
-			<div>
-				<ul class=shortcuts @click=${this.shortcut}>
+			<div class=shortcuts>
+				<ul @click=${this.shortcut}>
 					${Object.keys(SHORTCUTS).map((v) => html`<li data-op=${v}>${SHORTCUTS[v]}`)}
 				</ul>
-				<input data-op=apply type=button value=apply> <input data-op=clear type=button value=clear>
+				<div>
+					<input data-op=apply type=button value=apply> <input data-op=clear type=button value=clear>
+				</div>
 			</div>
 		</div>`;
 	}
 
 	renderMonthPicker() {
-		const current = this._current;
-		const month = current.getUTCMonth();
+		const month = this._mode_data.getUTCMonth();
 
 		return html`<div class=picker @click=${this.click}>
 			<div class=monthPicker>
-				<div>${months.map((m, i) => {
+				<div>${MONTHS.map((m, i) => {
 					return i === month ? html`<div class=selected data-op=${i}>${m}</div>` : html`<div data-op=${i}>${m}</div>`;
 				})}</div>
 				<div>
-					<input type=number name=year value=${current.getUTCFullYear()}>
+					<input type=number name=year value=${this._mode_data.getUTCFullYear()}>
 					<input type=button value=ok data-op=ok>
 				</div>
 			</div>
@@ -435,20 +455,20 @@ input[name="display"] {
 	display: flex;
 	color: #000;
 	margin-bottom: 1px;
+	text-align: center;
 }
 
-.datePicker .header span {
+.datePicker .header span:not(.x) {
 	cursor: pointer;
-	padding: 0 10px;
 	display: inline-block;
+	padding: 0 10px;
 }
 
 .datePicker .header div {
 	width: 100%;
-	text-align: center;
 }
 
-.datePicker .header span:hover {
+.datePicker .header span:not(.x):hover {
 	color: ${unsafeCSS(this.css.hi.fg)};
 	background: ${unsafeCSS(this.css.hi.bg)};
 	border-radius: 5px;
@@ -500,14 +520,17 @@ input[name="display"] {
 	align-self: center;
 	margin-top: auto;
 }
-
 .shortcuts {
-	width: 200px;
+	display: flex;
+	flex-direction: column;
+}
+.shortcuts ul {
 	max-height: 250px;
-	padding-left: 5px;
-	list-style: none;
 	overflow-y: scroll;
 	border-left: 1px solid #ccc;
+	padding-left: 5px;
+	list-style: none;
+	white-space: nowrap;
 }
 .shortcuts li {
 	padding: 5px;
@@ -523,14 +546,36 @@ input[name="display"] {
 }
 
 .shortcuts input {
-	width: 40px;
-	padding: 2px;
+	padding: 5px;
 }
 .shortcuts select {
 	padding: 2px;
 }
 input[data-op="clear"] {
 	float: right;
+}
+.nowide {
+	display: none;
+}
+@media (max-width: 800px) {
+	.picker {
+		padding: 5px;
+		flex-direction: column;
+	}
+	.month2 {
+		display: none;
+	}
+	.shortcuts {
+		flex-direction: column-reverse;
+	}
+	.shortcuts ul {
+		border: 0;
+		overflow-y: inherit;
+		max-height: inherit;
+	}
+	.nowide {
+		display: block;
+	}
 }
 		`];
 }
