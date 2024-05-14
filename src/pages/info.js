@@ -33,6 +33,7 @@ export class Info extends Element {
 				<div class=f><label>logdk version</label><div>${logdk.version}</div></div>
 				<div class=f><label>httpz mode</label><div>${logdk.httpz_blocking ? 'blocking' : 'nonblocking'}</div></div>
 				<div class=f><label>source</label><div><a href="https://github.com/karlseguin/logdk">github</a></div></div>
+				<div class=f><label>license</label><div><a href="https://github.com/karlseguin/logdk/blob/master/LICENSE">MIT</a></div></div>
 			</div>
 
 			<h3>duckdb</h3>
