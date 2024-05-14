@@ -23,14 +23,17 @@ export class Info extends Element {
 
 	renderInfo(info) {
 		const logdk = info.logdk;
-		const duckdb = info.duckdb;
+		const version = logdk.version.split('\n');
 
+		const duckdb = info.duckdb;
 		const duckdbKeys = Object.keys(duckdb).sort();
 
 		return html`<div>
 			<h3>lodgk</h3>
 			<div>
-				<div class=f><label>logdk version</label><div>${logdk.version}</div></div>
+				<div class=f><label>logdk version</label><div>${version[0].split(':')[1]}</div></div>
+				<div class=f><label>zig version</label><div>${version[1].split(':')[1]}</div></div>
+				<div class=f><label>ui version</label><div>${version[2].split(':')[1]}</div></div>
 				<div class=f><label>httpz mode</label><div>${logdk.httpz_blocking ? 'blocking' : 'nonblocking'}</div></div>
 				<div class=f><label>source</label><div><a href="https://github.com/karlseguin/logdk">github</a></div></div>
 				<div class=f><label>license</label><div><a href="https://github.com/karlseguin/logdk/blob/master/LICENSE">MIT</a></div></div>
@@ -55,7 +58,7 @@ export class Info extends Element {
 		this.css.reset,
 		css`
 :host > div {
-	max-width: 500px;
+	max-width: 600px;
 	margin: 10px auto;
 }
 
