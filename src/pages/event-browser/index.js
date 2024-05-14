@@ -66,7 +66,7 @@ export class EventBrowser extends Element {
 
 	datasetChange(e) {
 		this.resetForFirstPage();
-		this._filters = [];
+		this._filters = this._filters.filter((f) => f[0] === '$ts');
 		this._page = 1;
 		this._order = '-ldk_id';
 		this._dataset = e.detail;
