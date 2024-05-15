@@ -108,7 +108,6 @@ export class Logdk extends LitElement {
 		styles.reset,
 		css`
 header {
-	padding: 0 20px;
 	background: #fff;
 	border-bottom: 1px solid #ff79c6;
 }
