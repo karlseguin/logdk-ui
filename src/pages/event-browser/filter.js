@@ -10,6 +10,7 @@ export class Filter extends Element {
 		dataset: {type: String},
 		datasets: {type: Array},
 		filters: {type: Object},
+		autoRefresh: {type: Boolean},
 	};
 
 	constructor() {
@@ -41,6 +42,11 @@ export class Filter extends Element {
 		this.dispatchEvent(new CustomEvent('filterRemove', {detail: index}));
 	}
 
+	refreshClick() {
+		this.autoRefresh = !this.autoRefresh;
+		this.dispatchEvent(new CustomEvent('refreshChange', {detail: this.autoRefresh}));
+	}
+
 	render() {
 		if (this._dataset_lookup === null) {
 			let lookup = [["choose dataset", ""]];
@@ -57,6 +63,8 @@ export class Filter extends Element {
 			return acc;
 		}, {});
 
+		const refreshClass = this.autoRefresh ? 'on' : 'off';
+
 		return html`<div>
 			<div class=dynamic @click=${this.filterRemove}>
 				${this.data ? filters.map((f, i) => this.renderFilter(f, i)) : ''}
@@ -64,6 +72,7 @@ export class Filter extends Element {
 			<div class=static>
 				<logdk-select @change=${this.datasetChange} .options=${this._dataset_lookup} .selected=${this.dataset}></logdk-select>
 				<logdk-daterange @change=${this.dateChange} .ts=${ts}></logdk-daterange>
+				<a class="refresh ${refreshClass}" @click=${this.refreshClick}>⟳</a>
 			</div>
 		</div>`;
 	}
@@ -124,6 +133,28 @@ export class Filter extends Element {
 	background: ${unsafeCSS(this.css.hi.bg)};
 	text-decoration: line-through;
 }
+.refresh {
+	cursor: pointer;
+	border-radius: 4px;
+	padding: 2px 8px;
+}
+
+.refresh.off {
+	border: 1px solid transparent;
+	color: ${unsafeCSS(this.css.off.fg)};
+	background: ${unsafeCSS(this.css.off.bg)};
+}
+.refresh.on {
+	color: ${unsafeCSS(this.css.sel.fg)};
+	background: ${unsafeCSS(this.css.sel.bg)};
+	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
+}
+.refresh:hover {
+	color: ${unsafeCSS(this.css.hi.fg)};
+	border-color: ${unsafeCSS(this.css.hi.bd)};
+	background: ${unsafeCSS(this.css.hi.bg)};
+}
+
 @media (max-width: 800px) {
 	:host > div {
 		flex-direction: column-reverse;

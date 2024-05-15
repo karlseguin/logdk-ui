@@ -14,6 +14,7 @@ export class EventBrowser extends Element {
 	constructor() {
 		super();
 		this._data = null;
+		this._refreshTimer = null;
 		this.restoreFromQuery();
 	}
 
@@ -161,6 +162,13 @@ export class EventBrowser extends Element {
 		this.pushURL();
 	}
 
+	refreshChange(e) {
+		clearInterval(this._refreshTimer);
+		if (e.detail) {
+			this._refreshTimer = setInterval(() => this.reloadData(false, true), 5000)
+		}
+	}
+
 	detailClose() {
 		this._selected = null;
 		this._selectOnData = null;
@@ -176,7 +184,7 @@ export class EventBrowser extends Element {
 		this._selectOnData = null;
 	}
 
-	async reloadData(total) {
+	async reloadData(total, refresh) {
 		const dataset = this._dataset;
 		if (!dataset) {
 			this.tableElement.data = null;
@@ -184,8 +192,11 @@ export class EventBrowser extends Element {
 			return;
 		}
 
-		this.tableElement.data = 'loading';
-		this.pagerElement.paging = null;
+		if (!refresh) {
+			// prevent flashing when we're auto refreshing
+			this.pagerElement.paging = null;
+			this.tableElement.data = 'loading';
+		}
 		try {
 			const page = this._page;
 			const limit = this._limit;
@@ -253,7 +264,7 @@ export class EventBrowser extends Element {
 				}
 				return html`
 				<div class=browser>
-					<event-filter @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
+					<event-filter @refreshChange=${this.refreshChange} @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
 					<div class=data>
 						<div class=table>
 							<logdk-datatable .sortable=${true} .hideableNulls=${true} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
