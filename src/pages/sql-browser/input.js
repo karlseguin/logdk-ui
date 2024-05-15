@@ -20,16 +20,21 @@ export class Input extends Element {
 	}
 
 	render() {
-		return html`<div class=sql @keydown=${this.keydown} contenteditable=true>
-			${this.sql}
+		return html`<div>
+			<div class=sql @keydown=${this.keydown} contenteditable=true>${this.sql}</div>
 			<input @click=${this.run} type=button value=run>
-		</div>`;
+		</div>
+		`;
 	}
 
 	static styles = [
 		this.css.reset,
 		this.css.form,
 		css`
+:host > div {
+	position: relative;
+}
+
 .sql {
 	font-family: monospace;
 	padding: 10px;
@@ -37,12 +42,11 @@ export class Input extends Element {
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	margin: 10px 0;
-	position: relative;
 }
 input{
 	position: absolute;
-	bottom: 4px;
-	right: 4px;
+	right: 5px;
+	bottom: 7px;
 }
 		`
 	];
