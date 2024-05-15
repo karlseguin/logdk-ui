@@ -1,16 +1,16 @@
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
-const OPS = ['==', '!=', '<', '<=', '>', '>=', 'rel'];
-const NAMES = ['e', 'n', 'l', 'le', 'g', 'ge', 'rel'];
+const OPS = ['==', '!=', '<', '<=', '>', '>=', 'rel', 'in'];
+const CODES = ['e', 'n', 'l', 'le', 'g', 'ge', 'rel', 'in'];
 const EQUALITY_FITER_HTML_LISTS = unsafeHTML(htmlLists(['==', '!=']).join(''));
 const COMPARISON_FILTER_HTML_LISTS = unsafeHTML(htmlLists(['==', '!=', '<', '<=', '>', '>=']).join(''));
 
 function htmlLists(ops) {
-	return ops.map((op, i) => `<li data-op=${NAMES[i]}>${op}`);
+	return ops.map((op, i) => `<li data-op=${CODES[i]}>${op}`);
 }
 
 function nameToOp(name) {
-	return OPS[NAMES.indexOf(name)];
+	return OPS[CODES.indexOf(name)];
 }
 
 function forValue(type, value) {

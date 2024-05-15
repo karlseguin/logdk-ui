@@ -32,7 +32,15 @@ export class EventBrowser extends Element {
 		const args = url.parseQuery(qs);
 		this._dataset = args.dataset ?? null;
 		this._selected = args.selected ?? null;
-		this._filters = args.filters ? JSON.parse(args.filters) : [];
+		if (args.filters) {
+			try {
+				this._filters = JSON.parse(args.filters);
+			} catch {
+				this._filters = [];
+			}
+		} else {
+			this._filters = [];
+		}
 
 		// can't select this until we've loaded the data
 		this._selectOnData = this._selected;
@@ -117,7 +125,25 @@ export class EventBrowser extends Element {
 	}
 
 	filterClick(e) {
-		this._filters.push(e.detail);
+		const filter = e.detail;
+		const op = filter[1];
+
+		let handled = false;
+		if (op === 'e') {
+			// convert multiple equals on the same column into an 'in'
+			const col = filter[0];
+			const existing = this._filters.find((f) => f[0] == col && (f[1] == 'e' || f[1] == 'in'));
+			if (existing) {
+				existing[1] = 'in';
+				existing.push(filter[2]);
+				handled = true;
+			}
+		}
+
+		if (!handled) {
+			this._filters.push(filter);
+		}
+
 		this.filterChanged(true);
 	}
 

@@ -72,9 +72,17 @@ export class Filter extends Element {
 		const col = f[0];
 		if (col == '$ts') return '';
 
+		const op = f[1];
 		const index = this.data.cols.indexOf(col);
 		const type = this.data.types[index];
-		return html`<div class=field data-op=${i}>${col} ${nameToOp(f[1])} ${fmt.value(fmt.typed(f[2], type)) ?? 'null'}</div>`
+		return html`<div class=field data-op=${i}>${col} ${nameToOp(op)} ${this.renderValue(op, f, type) ?? 'null'}</div>`;
+	}
+
+	renderValue(op, f, type) {
+		switch (op) {
+			case 'in': return fmt.value(f.slice(2));
+			default: return fmt.value(fmt.typed(f[2], type));
+		}
 	}
 
 	static styles = [
