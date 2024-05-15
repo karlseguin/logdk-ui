@@ -32,7 +32,7 @@ export class Info extends Element {
 			<h3>lodgk</h3>
 			<div>
 				<div><label>logdk version</label><div>${version[0].split(':')[1].substr(0, 10)}</div></div>
-				<div><label>zig version</label><div>${version[1].split(':')[1].substr(0, 10)}</div></div>
+				<div><label>zig version</label><div>${version[1].split(':')[1]}</div></div>
 				<div><label>ui version</label><div>${version[2].split(':')[1].substr(0, 10)}</div></div>
 				<div><label>httpz mode</label><div>${logdk.httpz_blocking ? 'blocking' : 'nonblocking'}</div></div>
 				<div><label>source</label><div><a href="https://github.com/karlseguin/logdk">github</a></div></div>
