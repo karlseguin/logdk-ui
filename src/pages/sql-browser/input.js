@@ -13,7 +13,7 @@ export class Input extends Element {
 	}
 
 	run() {
-		const sql = this.selector('.sql').textContent;
+		const sql = this.selector('.sql').textContent.trim();
 		if (sql) {
 			this.dispatchEvent(new CustomEvent('sql', {detail: sql}));
 		}
@@ -42,6 +42,7 @@ export class Input extends Element {
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	margin: 10px 0;
+	white-space: pre-wrap;
 }
 input{
 	position: absolute;
