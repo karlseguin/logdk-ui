@@ -37,7 +37,7 @@ function typed(value, type) {
 			return new Date(value / 1000);
 		case 'timestamp[]':
 		case 'timestamptz[]':
-			return value.map((v) => new Date(v / 1000));
+			return value.map((v) => v ? new Date(v / 1000) : null);
 		case 'varchar':
 			if (value.length > 10 && value[4] == '-' && value[7] == '-') {
 				const date = new Date(value);
