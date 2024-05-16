@@ -35,6 +35,9 @@ function typed(value, type) {
 		case 'timestamptz':
 			// micro to milli
 			return new Date(value / 1000);
+		case 'timestamp[]':
+		case 'timestamptz[]':
+			return value.map((v) => new Date(v / 1000));
 		case 'varchar':
 			if (value.length > 10 && value[4] == '-' && value[7] == '-') {
 				const date = new Date(value);
