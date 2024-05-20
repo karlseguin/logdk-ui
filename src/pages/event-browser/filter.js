@@ -11,10 +11,12 @@ export class Filter extends Element {
 		datasets: {type: Array},
 		filters: {type: Object},
 		autoRefresh: {type: Boolean},
+		reloading: {type: Boolean}
 	};
 
 	constructor() {
 		super();
+		this.reloading = false;
 		this._dataset_lookup = null;
 	}
 
@@ -63,7 +65,7 @@ export class Filter extends Element {
 			return acc;
 		}, {});
 
-		const refreshClass = this.autoRefresh ? 'on' : 'off';
+		const refreshClass = this.reloading ? 'active': this.autoRefresh ? 'on' : 'off';
 
 		return html`<div>
 			<div class=dynamic @click=${this.filterRemove}>
@@ -138,7 +140,6 @@ export class Filter extends Element {
 	border-radius: 4px;
 	padding: 2px 8px;
 }
-
 .refresh.off {
 	border: 1px solid transparent;
 	color: ${unsafeCSS(this.css.off.fg)};
@@ -149,10 +150,20 @@ export class Filter extends Element {
 	background: ${unsafeCSS(this.css.sel.bg)};
 	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
 }
+.refresh.active {
+	background: transparent;
+	animation: rotate 1s infinite linear;
+}
+
 .refresh:hover {
 	color: ${unsafeCSS(this.css.hi.fg)};
 	border-color: ${unsafeCSS(this.css.hi.bd)};
 	background: ${unsafeCSS(this.css.hi.bg)};
+}
+@keyframes rotate{
+	0%{transform: rotate(0deg);}
+	50%{transform: rotate(180deg);}
+	100%{transform: rotate(360deg);}
 }
 
 @media (max-width: 800px) {

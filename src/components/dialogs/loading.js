@@ -40,7 +40,7 @@ class Loading extends Element {
 	grid-area: 1/1;
 }
 .loader:before {--_s: -1}
-.loader:after  {--_s:  1}
+.loader:after  {--_s: 1}
 
 @keyframes load {
 	20% {background-position: top}

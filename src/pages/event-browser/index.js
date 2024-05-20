@@ -192,7 +192,9 @@ export class EventBrowser extends Element {
 			return;
 		}
 
-		if (!refresh) {
+		if (refresh) {
+			this.filterElement.reloading = true;
+		} else {
 			// prevent flashing when we're auto refreshing
 			this.pagerElement.paging = null;
 			this.tableElement.data = 'loading';
@@ -225,6 +227,7 @@ export class EventBrowser extends Element {
 				};
 				this._selectOnData = null;
 			}
+			this.filterElement.reloading = false;
 		} catch (e) {
 			this.detailElement.row = null;
 			this.pagerElement.paging = null;
