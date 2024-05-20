@@ -19,27 +19,28 @@ function forValue(type, value) {
 	}
 
 	switch (type) {
-		case 'varchar': return EQUALITY_FITER_HTML_LISTS;
-		case 'blob': return EQUALITY_FITER_HTML_LISTS;
-		case 'boolean': return COMPARISON_FILTER_HTML_LISTS;
-		case 'tinyint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'integer': return COMPARISON_FILTER_HTML_LISTS;
-		case 'smallint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'bigint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'hugeint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'utinyint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'usmallint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'uinteger': return COMPARISON_FILTER_HTML_LISTS;
-		case 'ubigint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'uhugeint': return COMPARISON_FILTER_HTML_LISTS;
-		case 'real': return COMPARISON_FILTER_HTML_LISTS;
-		case 'double': return COMPARISON_FILTER_HTML_LISTS;
-		case 'date': return COMPARISON_FILTER_HTML_LISTS;
-		case 'time': return COMPARISON_FILTER_HTML_LISTS;
-		case 'timestamp': return COMPARISON_FILTER_HTML_LISTS;
-		case 'enum': return EQUALITY_FITER_HTML_LISTS;
-		case 'uuid': return EQUALITY_FITER_HTML_LISTS;
+		case 'varchar':
+		case 'blob':
+		case 'enum':
+		case 'uuid':
 		case 'interval': return EQUALITY_FITER_HTML_LISTS;
+		case 'boolean':
+		case 'tinyint':
+		case 'integer':
+		case 'smallint':
+		case 'bigint':
+		case 'hugeint':
+		case 'utinyint':
+		case 'usmallint':
+		case 'uinteger':
+		case 'ubigint':
+		case 'uhugeint':
+		case 'real':
+		case 'double':
+		case 'date':
+		case 'time':
+		case 'timestamp':
+		case 'timestamptz': return COMPARISON_FILTER_HTML_LISTS;
 	}
 	if (type.startsWith('decimal(')) return COMPARISON_FILTER_HTML_LISTS;
 

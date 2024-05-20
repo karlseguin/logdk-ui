@@ -142,7 +142,7 @@ export class DataTable extends Element {
 				const idx = displayIndexes[j];
 				const type = types[idx];
 				const value = fmt.typed(row[idx], type);
-				str += '<td>' + (fmt.value(value, true) ?? '﹘');
+				str += '<td>' + (fmt.value(value, true, false) ?? '﹘');
 			}
 		}
 

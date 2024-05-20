@@ -90,7 +90,7 @@ export class Filter extends Element {
 	renderValue(op, f, type) {
 		switch (op) {
 			case 'in': return fmt.value(f.slice(2));
-			default: return fmt.value(fmt.typed(f[2], type));
+			default: return fmt.value(fmt.typed(f[2], type), false, true);
 		}
 	}
 

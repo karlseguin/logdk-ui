@@ -1,4 +1,5 @@
 import { LitElement, html, css, unsafeCSS } from 'lit-element';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { ContextConsumer } from '@lit/context';
 
 import * as styles from 'styles';
@@ -22,4 +23,4 @@ class Element extends LitElement {
 	selector(s) { return this.renderRoot?.querySelector(s) ?? null; }
 };
 
-export { Element, html, css, unsafeCSS };
+export { Element, html, css, unsafeCSS, unsafeHTML };

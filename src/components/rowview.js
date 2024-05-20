@@ -1,4 +1,4 @@
-import { Element, html, css, unsafeCSS } from 'components/base';
+import { Element, html, css, unsafeCSS, unsafeHTML } from 'components/base';
 import * as fmt from 'fmt';
 import * as filters from 'filters';
 
@@ -68,7 +68,7 @@ export class RowView extends Element {
 					${showFilters ? html`<ul class=filters @click=${this.filterClick}>${filters.forValue(type, value)}` : ''}
 					<span>${type}</span>
 				</label>
-				${fmt.value(fmt.typed(value, type)) ?? 'null'}
+				${this.renderValue(value, type)}
 			</div>`;
 		});
 
@@ -82,6 +82,17 @@ export class RowView extends Element {
 			</ul>
 			${fields}
 		</div>`
+	}
+
+	renderValue(value, type) {
+		const tv = fmt.typed(value, type)
+		if (Array.isArray(tv) === false) {
+			return unsafeHTML(fmt.value(tv, true, true));
+		}
+
+		return html`<ul>
+			${tv.map((v) => html`<li>${fmt.value(v, true, true)}`)}
+		</ul>`;
 	}
 
 	updated() {
@@ -156,6 +167,7 @@ export class RowView extends Element {
 .field:last-of-type {
 	border: 0;
 }
+
 
 label {
 	display: flex;

@@ -8,36 +8,48 @@ function escapeHtml(html) {
 	return html.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
-function value(v, escape) {
+function value(v, escape, full) {
+	if (v === null) {
+		return 'null';
+	}
+
 	if (v instanceof Date) {
 		return dateTime(v);
 	}
+
 	if (escape && typeof(v) === 'string') {
 		return escapeHtml(v);
 	}
+
 	if (typeof(v) === 'object') {
 		if (Array.isArray(v)) {
-			if (v.length == 0) return '[]';
-			let str = '[' + value(v[0], escape);
+			if (v.length == 0) return full ? '' : '[]';
+			let str = '[' + value(v[0], escape, full);
 			for (let i = 1; i < v.length; i++) {
 				str += ',' + value(v[i], escape);
 			}
 			return str + ']';
 		}
+		switch (v.type) {
+		case 'time': return full ? v.value : v.value.slice(0, -7);
+		default: return v;
+		}
 	}
-	return v;
+	return v.toString();
 }
 
 function typed(value, type) {
 	if (value === null) return null;
+	if (type.endsWith('[]')) {
+		type = type.slice(0, -2);
+		return value.map((v) => typed(v, type));
+	}
 	switch (type) {
 		case 'timestamp':
 		case 'timestamptz':
 			// micro to milli
 			return new Date(value / 1000);
-		case 'timestamp[]':
-		case 'timestamptz[]':
-			return value.map((v) => v ? new Date(v / 1000) : null);
+		case 'time': return {type: 'time', value: value};
 		case 'varchar':
 			if (value.length > 10 && value[4] == '-' && value[7] == '-') {
 				const date = new Date(value);
