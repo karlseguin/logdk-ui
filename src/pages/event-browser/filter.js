@@ -128,6 +128,9 @@ export class Filter extends Element {
 	color: ${unsafeCSS(this.css.sel.fg)};
 	background: ${unsafeCSS(this.css.sel.bg)};
 	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
+	max-width: 500px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .field:hover {
 	color: ${unsafeCSS(this.css.hi.fg)};

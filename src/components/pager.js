@@ -76,10 +76,9 @@ export class Pager extends Element {
 	static styles = [
 		css`
 .pager {
-	margin: 10px 0 20px;
-	margin-left: auto;
 	user-select: none;
 	text-align: center;
+	margin: 10px 0 50px;
 }
 .hidden {
 	visibility: hidden;

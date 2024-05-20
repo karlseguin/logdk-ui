@@ -68,7 +68,7 @@ export class RowView extends Element {
 					${showFilters ? html`<ul class=filters @click=${this.filterClick}>${filters.forValue(type, value)}` : ''}
 					<span>${type}</span>
 				</label>
-				${this.renderValue(value, type)}
+				<pre>${this.renderValue(value, type)}</pre>
 			</div>`;
 		});
 
@@ -90,9 +90,7 @@ export class RowView extends Element {
 			return unsafeHTML(fmt.value(tv, true, true));
 		}
 
-		return html`<ul>
-			${tv.map((v) => html`<li>${fmt.value(v, true, true)}`)}
-		</ul>`;
+		return tv.map((v) => html`${fmt.value(v, true, true)}\n`);
 	}
 
 	updated() {
@@ -159,8 +157,8 @@ export class RowView extends Element {
 }
 
 .field {
-	margin: 1px 0;
-	padding: 2px 10px;
+	margin: 2px 0;
+	padding: 10px 10px;
 	overflow-wrap: break-word;
 	border-bottom: 1px solid #eee;
 }
@@ -168,12 +166,17 @@ export class RowView extends Element {
 	border: 0;
 }
 
-
-label {
+.field label {
+	font-size: 90%;
 	display: flex;
 	font-weight: bold;
 	flex-wrap: wrap;
 }
+.field pre {
+	max-width: 400px;
+	white-space: pre-wrap;
+}
+
 .filters {
 	gap: 5px;
 	font-size: 80%;

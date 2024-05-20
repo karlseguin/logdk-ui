@@ -187,7 +187,7 @@ export class DataTable extends Element {
 }
 .wrap {
 	display: grid;
-	max-height: calc(100vh - 200px);
+	max-height: calc(100vh - 150px);
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 	overflow: auto;
 	min-width: 100%;
@@ -283,6 +283,12 @@ tbody tr:not(.empty):hover td {
 	color: ${unsafeCSS(this.css.sel.fg)};
 	background: ${unsafeCSS(this.css.sel.bg)};
 	border: 1px solid ${unsafeCSS(this.css.sel.bd)};
+}
+@media (max-height: 300px) {
+	.wrap {
+		overflow-y: visible;
+		max-height: calc(100vh);
+	}
 }
 		`
 	];
