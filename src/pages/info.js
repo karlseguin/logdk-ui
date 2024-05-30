@@ -28,25 +28,25 @@ export class Info extends Element {
 		const duckdb = info.duckdb;
 		const duckdbKeys = Object.keys(duckdb).sort();
 
-		return html`<div>
-			<h3>lodgk</h3>
-			<div>
+		return html`
+			<section>
+				<h3>lodgk</h3>
 				<div><label>logdk version</label><div>${version[0].split(':')[1].substr(0, 10)}</div></div>
 				<div><label>zig version</label><div>${version[1].split(':')[1]}</div></div>
 				<div><label>ui version</label><div>${version[2].split(':')[1].substr(0, 10)}</div></div>
 				<div><label>httpz mode</label><div>${logdk.httpz_blocking ? 'blocking' : 'nonblocking'}</div></div>
 				<div><label>source</label><div><a href="https://github.com/karlseguin/logdk">github</a></div></div>
 				<div><label>license</label><div><a href="https://github.com/karlseguin/logdk/blob/master/LICENSE">MIT</a></div></div>
-			</div>
+			</section>
 
-			<h3>duckdb</h3>
-			<div>
+			<section>
+				<h3>duckdb</h3>
 				<div><label>website</label><div><a href="https://duckdb.org/">https://duckdb.org/</a></div></div>
 				<div><label>source</label><div><a href="https://github.com/duckdb/duckdb">github</a></div></div>
 				<div><label>license</label><div><a href="https://github.com/duckdb/duckdb/blob/main/LICENSE">MIT</a></div></div>
 				${duckdbKeys.map((k) => this.renderObject(duckdb[k]))}
-			</div>
-		</div>`;
+			</section>
+		`;
 	}
 
 	renderObject(obj) {
@@ -57,35 +57,29 @@ export class Info extends Element {
 	static styles = [
 		this.css.reset,
 		css`
-:host > div {
+section {
 	padding: 0 10px;
 	max-width: 600px;
 	margin: 10px auto;
 }
 
 h3 {
-	margin: 20px 0 0 0;
+	margin-top: 20px;
 }
 
-:host > div > div > div {
+section > div {
 	display: flex;
-	flex-direction: row;
-	padding: 4px;
+	padding: 5px;
 	border-bottom: 1px solid #f0f0f0;
 }
 
-:host > div > div > div:nth-of-type(even) {
+section > div:nth-of-type(even) {
 	background: #f6f6f6;
 }
 
-label {
-	width: 175px;
+section > div > * {
+	flex: 1;
 }
-
-// .f > div {
-// 	margin-left: auto;
-// }
-
 		`
 	]
 }

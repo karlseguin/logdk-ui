@@ -1,19 +1,27 @@
 import { ContextError } from 'error';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { styleMap } from 'lit/directives/style-map.js';
 import { Element, html, css } from 'components/base';
 
 class Error extends Element {
 	static properties = {
 		err: {},
 		message: {},
-		_showDetails: {state: true},
 	};
 
 	constructor() {
 		super();
 		this.absolute = true;
-		this._showDetails = true;
+	}
+
+	render() {
+		if (this.err === undefined) {
+			return html`<h3>${this.message}</h3>`;
+		}
+
+		return html`<h3>${this.message}</h3>
+		<div>
+			<div class=fields>${this.details()}</div>
+		</div>`;
 	}
 
 	details() {
@@ -33,23 +41,6 @@ class Error extends Element {
 			</table>`;
 	}
 
-	toggleDetails(e) {
-		this._showDetails = !this._showDetails;
-		e.preventDefault();
-		e.stopPropagation();
-	}
-
-	render() {
-		// const styles = this.absolute ? {position: 'absolute', top: '50px'} : {};
-		const styles ={};
-		return html`
-			<div style=${styleMap(styles)}>
-				<p>${this.message}. Please try again.</p>
-				<p><a href=# @click=${this.toggleDetails}>${this._showDetails ? html`hide details` : html`show details`}</a></p>
-				<div ?hidden=${!this._showDetails} class=fields>${this.details()}</div>
-			</div>
-		`;
-	}
 
 	static styles = [
 		this.css.reset,
@@ -66,8 +57,8 @@ a {
 	color: #f00;
 	text-decoration: underline;
 }
-p {
-	padding: 0 10px;
+h3 {
+	margin: 10px 0;
 	text-align: center;
 }
 pre {

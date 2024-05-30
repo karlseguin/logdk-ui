@@ -16,11 +16,13 @@ class Element extends LitElement {
 		hi: {bg: '#555', bd: '#444', fg: '#fff'},
 	};
 
-	context = new ContextConsumer(this, context);
+	_context = new ContextConsumer(this, context);
+	get api() { return this._context.value.api; }
+	get router() { return this._context.value.router; }
+	get settings() { return this._context.value.settings; }
+	get datasets() { return this._context.value.datasets; }
 
-	get api() { return this.context.value.api; }
-
-	selector(s) { return this.renderRoot?.querySelector(s) ?? null; }
+	selector(s) { return this.renderRoot.querySelector(s) ?? null; }
 };
 
 export { Element, html, css, unsafeCSS, unsafeHTML };

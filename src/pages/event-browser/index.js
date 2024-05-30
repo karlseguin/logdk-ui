@@ -1,4 +1,3 @@
-import { Task } from '@lit/task';
 import { Element, html, css } from 'components/base';
 import { ContextError } from 'error';
 import * as url from 'url';
@@ -249,37 +248,23 @@ export class EventBrowser extends Element {
 		url.pushFragment(url.encodeMap(opts));
 	}
 
-	_describe = new Task(this, {
-		task: async (_, {signal}) => {
-			const res = await this.api.describe({signal: signal});
-			if (res.status === 200) return res.body;
-			throw ContextError.fromRes(res);
-		},
-		args: () => []
-	});
-
 	render() {
-		return this._describe.render({
-			pending: () => html`<logdk-loading>Loading configuration</logdk-loading>`,
-			complete: (data) => {
-				if (data.datasets.length == 0) {
-					return html`<logdk-notice>There is no data in the system</logdk-notice>`
-				}
-				return html`
-				<div class=browser>
-					<event-filter @refreshChange=${this.refreshChange} @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${data.datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
-					<div class=data>
-						<div class=table>
-							<logdk-datatable .sortable=${true} .hideableNulls=${true} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
-							<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
-						</div>
-						<logdk-rowview @close=${this.detailClose} @filterClick=${this.filterClick} .filterable=${true}></logdk-rowview>
-					</div>
+		// getter for this.datasets is in the base
+		const datasets = this.datasets;
+		if (datasets.length == 0) {
+			return html`<logdk-notice>There is no data in the system</logdk-notice>`
+		}
+
+		return html`<div class=browser>
+			<event-filter @refreshChange=${this.refreshChange} @dateChange=${this.dateChange} @datasetChange=${this.datasetChange} @filterRemove=${this.filterRemove} .datasets=${datasets} .dataset=${this._dataset} .filters=${this._filters}></event-filter>
+			<div class=data>
+				<div class=table>
+					<logdk-datatable .sortable=${true} .hideableNulls=${true} @headerClick=${this.headerClick} @rowClick=${this.rowClick}></logdk-datatable>
+					<logdk-pager @pageClick=${this.pageClick}></logdk-pager>
 				</div>
-				`;
-			},
-			error: (err) => html`<logdk-error message="Failed to fetch information about the system" .err=${err}></logdk-error>`,
-		});
+				<logdk-rowview @close=${this.detailClose} @filterClick=${this.filterClick} .filterable=${true}></logdk-rowview>
+			</div>
+		</div>`;
 	}
 
 	updated() {
