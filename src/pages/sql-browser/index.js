@@ -1,5 +1,7 @@
 import { Element, html, css } from 'components/base';
 
+import { ContextError } from 'error';
+
 import './input.js';
 import * as url from 'url';
 import 'components/pager.js';
@@ -98,6 +100,7 @@ export class SQLBrowser extends Element {
 			const limit = this._limit;
 
 			const res = await this.api.exec({sql: sql, total: total, page: page, limit: limit}, {});
+			if (res.status !== 200) throw ContextError.fromRes(res);
 			const data = res.body;
 			this._data = data;
 			this.tableElement.data = {result: data};

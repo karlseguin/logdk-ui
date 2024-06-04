@@ -10,6 +10,7 @@ import { context } from 'context';
 import { Api } from 'api';
 import { User } from 'user';
 import { Router } from 'router';
+import { ContextError } from 'error';
 
 import 'pages/admin';
 import 'pages/sql-browser';

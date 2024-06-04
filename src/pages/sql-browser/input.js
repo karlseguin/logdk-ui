@@ -13,7 +13,7 @@ export class Input extends Element {
 	}
 
 	run() {
-		const sql = this.selector('.sql').textContent.trim();
+		const sql = this.selector('.sql').innerText.trim();
 		if (sql) {
 			this.dispatchEvent(new CustomEvent('sql', {detail: sql}));
 		}
