@@ -164,6 +164,7 @@ export class EventBrowser extends Element {
 	refreshChange(e) {
 		clearInterval(this._refreshTimer);
 		if (e.detail) {
+			this.reloadData(false, true);
 			this._refreshTimer = setInterval(() => this.reloadData(false, true), 5000)
 		}
 	}
