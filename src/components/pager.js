@@ -1,7 +1,6 @@
 import { Element, html, css, unsafeCSS } from 'components/base';
 import {map} from 'lit/directives/map.js';
 import {range} from 'lit/directives/range.js';
-import {styleMap} from 'lit/directives/style-map.js';
 
 export class Pager extends Element {
 	static properties = {

@@ -8,7 +8,9 @@ import { context } from '../context';
 class Element extends LitElement {
 	static css = {
 		form: styles.form,
+		crud: styles.crud,
 		reset: styles.reset,
+		button: styles.button,
 		hdr: {bg: '#ffe6fa', bd: '#ead1e6'},
 		sel: {bg: '#c3f9ff', bd: '#99d6dd', fg: '#000'},
 		hov: {bg: '#ffc', bd: '#d3d388', fg: '#000'},

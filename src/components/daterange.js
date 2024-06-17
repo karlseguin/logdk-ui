@@ -375,6 +375,7 @@ export class DateRange extends Element {
 
 	static styles = [
 		this.css.form,
+		this.css.button,
 		css`
 .wrap {
 	position: relative;

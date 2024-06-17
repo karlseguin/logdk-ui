@@ -1,5 +1,5 @@
-import { ContextError } from 'error';
 import { encodeMap } from 'url';
+import { ContextError } from 'error';
 
 export class Api {
 	async describe(opts) {
@@ -24,6 +24,18 @@ export class Api {
 
 	async saveSettings(settings) {
 		return request('/api/1/settings', {method: 'POST', body: JSON.stringify(settings)});
+	}
+
+	async tokensList() {
+		return request('/api/1/tokens', {});
+	}
+
+	async tokensCreate() {
+		return request('/api/1/tokens', {method: 'POST'});
+	}
+
+	async tokensDelete(id) {
+		return request(`/api/1/tokens/${id}`, {method: 'DELETE'});
 	}
 };
 

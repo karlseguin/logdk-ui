@@ -1,7 +1,7 @@
 import { Task } from '@lit/task';
 import { Element, html, css, unsafeCSS } from 'components/base';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { ContextError } from 'error';
+
 import * as fmt from 'fmt';
 
 export class DataTable extends Element {

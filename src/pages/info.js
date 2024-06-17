@@ -2,6 +2,7 @@ import { Element, html, css, unsafeCSS } from 'components/base';
 import { Task } from '@lit/task';
 
 import 'components/dialogs';
+import { ContextError } from 'error';
 
 export class Info extends Element {
 	_info = new Task(this, {

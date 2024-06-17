@@ -2,6 +2,7 @@ import { Element, css } from 'components/base';
 import { html } from 'lit/static-html.js';
 
 import './users';
+import './tokens';
 import './settings';
 import './datasets';
 

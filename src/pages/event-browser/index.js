@@ -1,5 +1,5 @@
 import { Element, html, css } from 'components/base';
-import { ContextError } from 'error';
+
 import * as url from 'url';
 import * as fmt from 'fmt';
 

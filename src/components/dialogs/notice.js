@@ -1,4 +1,3 @@
-import { ContextError } from 'error';
 import { Element, html, css } from 'components/base';
 
 class Notice extends Element {

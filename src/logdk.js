@@ -45,7 +45,7 @@ export class Logdk extends LitElement {
 			case '/sql': return {title: 'sql', component: 'sql-browser'};
 			case '/info': return {title: 'info', component: 'logdk-info'};
 			case '/admin': return {title: 'settings', component: 'logdk-admin', child: 'logdk-admin-settings'};
-			case '/admin/datasets': return {title: 'datasets', component: 'logdk-admin', child: 'logdk-admin-datasets'};
+			case '/admin/tokens': return {title: 'tokens', component: 'logdk-admin', child: 'logdk-admin-tokens'};
 			default: return null;
 		}
 	}

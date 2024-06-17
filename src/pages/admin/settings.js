@@ -8,6 +8,7 @@ export class Settings extends Element {
 		super();
 		this._form = new Form();
 	}
+
 	async click() {
 		const settings = {
 			create_tokens: this.selector('#create_tokens').checked,
@@ -56,6 +57,7 @@ export class Settings extends Element {
 	static styles = [
 		this.css.reset,
 		this.css.form,
+		this.css.button,
 	]
 }
 customElements.define('logdk-admin-settings', Settings);

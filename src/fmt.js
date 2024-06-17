@@ -1,8 +1,5 @@
 const intlDate = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
 const intlTime = new Intl.DateTimeFormat(undefined, {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false});
-function dateTime(dt) {
-	return intlDate.format(dt) + ' ' + intlTime.format(dt);
-}
 
 function escapeHtml(html) {
 	return html.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -14,7 +11,7 @@ function value(v, escape, full) {
 	}
 
 	if (v instanceof Date) {
-		return dateTime(v);
+		return date(v);
 	}
 
 	if (escape && typeof(v) === 'string') {
@@ -36,6 +33,10 @@ function value(v, escape, full) {
 		}
 	}
 	return v.toString();
+}
+
+function date(dt) {
+	return intlDate.format(dt) + ' ' + intlTime.format(dt);
 }
 
 function typed(value, type) {
@@ -98,4 +99,4 @@ function relativeTime(op) {
 	return [gte, lte];
 }
 
-export { typed, value, relativeTime };
+export { typed, value, date, relativeTime };
