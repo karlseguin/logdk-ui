@@ -1,3 +1,3 @@
-import './error.js'
-import './notice.js'
-import './loading.js'
+import './error.js';
+import './notice.js';
+import './loading.js';

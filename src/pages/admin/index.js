@@ -1,7 +1,6 @@
 import { Element, css } from 'components/base';
 import { html } from 'lit/static-html.js';
 
-import './users';
 import './tokens';
 import './settings';
 import './datasets';
@@ -10,13 +9,13 @@ export class Admin extends Element {
 	popstate() {
 		this.update()
 	}
+
 	render() {
 		const [c, tag] = this.router.renderChild();
 
 		return html`<nav><ul>
 			<li><a href=/admin data-wc>general settings</a></li>
-			<li><a href=/admin/users data-wc>users</a></li>
-			${this.settings.create_tokens ? html`<li><a href=/admin/tokens data-wc>tokens</a></li>` : ''}
+			<li><a href=/admin/tokens data-wc>tokens</a></li>
 		</ul></nav>
 		<div><${tag}></${tag}></div>`;
 	}

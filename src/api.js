@@ -37,6 +37,13 @@ export class Api {
 	async tokensDelete(id) {
 		return request(`/api/1/tokens/${id}`, {method: 'DELETE'});
 	}
+
+	async usersList() {
+		return request('/api/1/users', {});
+	}
+	async userCreate(user) {
+		return request('/api/1/users', {method: 'POST', body: JSON.stringify(user)});
+	}
 };
 
 function request(url, opts) {

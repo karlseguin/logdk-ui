@@ -25,7 +25,6 @@ class Loading extends Element {
 	border: 1px solid #e0e0e0;
 	transform: translate(-50%, -30%);
 	white-space: nowrap;
-
 }
 .loader, .loader:before, .loader:after {
 	width: 8px;

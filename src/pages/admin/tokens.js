@@ -40,7 +40,6 @@ export class Tokens extends Element {
 
 	render() {
 		return this._listTokens.render({
-			pending: () => html`<logdk-loading>Loading tokens</logdk-loading>`,
 			complete: (result) => {
 				return html`
 					<div class=control>
@@ -54,7 +53,7 @@ export class Tokens extends Element {
 	}
 
 	renderTokens(tokens) {
-		if (tokens.length == 0) return;
+		if (tokens.length == 0) return html`<h5>There are no tokens in the system</h5>`;
 
 		const added_id = this._added_id;
 		return html`<table>
@@ -81,5 +80,3 @@ export class Tokens extends Element {
 	]
 }
 customElements.define('logdk-admin-tokens', Tokens);
-
-// <span class=delete_x>✖</span>
