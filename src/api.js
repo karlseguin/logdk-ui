@@ -18,10 +18,6 @@ export class Api {
 		return request('/api/1/info', opts);
 	}
 
-	async sessionInfo(opts) {
-		return request('/api/1/session', opts);
-	}
-
 	async saveSettings(settings) {
 		return request('/api/1/settings', {method: 'POST', body: JSON.stringify(settings)});
 	}

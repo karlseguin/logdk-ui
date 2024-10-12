@@ -14,7 +14,7 @@ export class EventBrowser extends Element {
 		super();
 		this._data = null;
 		this._refreshTimer = null;
-		this.restoreFromQuery();
+		this.restoreFromQuery(true);
 	}
 
 	connectedCallback() {
@@ -27,7 +27,7 @@ export class EventBrowser extends Element {
 		window.removeEventListener('keydown', this.keydown.bind(this));
 	}
 
-	restoreFromQuery() {
+	restoreFromQuery(fresh) {
 		const qs = top.location.hash;
 		const args = url.parseQuery(qs);
 		this._dataset = args.dataset ?? null;
@@ -38,6 +38,10 @@ export class EventBrowser extends Element {
 			} catch {
 				this._filters = [];
 			}
+		} else if (fresh) {
+			// TODO local storage for the last filters used?
+			// at least for the timestamp and the dataset
+			this._filters = [['$ts', 'rel', 10080]];
 		} else {
 			this._filters = [];
 		}
@@ -61,7 +65,7 @@ export class EventBrowser extends Element {
 
 	popstate() {
 		this.resetForFirstPage();
-		this.restoreFromQuery();
+		this.restoreFromQuery(false);
 		this.reloadData(true);
 		this.filterElement.dataset = this._dataset ?? '';
 		this.update();
